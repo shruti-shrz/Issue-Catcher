@@ -3,6 +3,7 @@
 "name": "Github_plugin",
 "version": "1.0",
 "description": "Build an Extension!",
+"permissions": ["storage"],
 "content_scripts":[
 {
 	"matches" : ["https://github.com/*"],
