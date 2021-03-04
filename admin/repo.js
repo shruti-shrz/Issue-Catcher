@@ -42,6 +42,7 @@ async function GetRepos(url = "https://api.github.com/search/repositories?q=star
         resfromback = await fetch ("http://localhost:3000", {
             "method" : "POST",
             "headers" : backheaders, 
+            "mode" : "no-cors",
             "body" : {
                 "list" : repolist
             }
