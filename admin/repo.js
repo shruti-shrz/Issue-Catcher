@@ -5,10 +5,6 @@ const RepoSchema = new mongoose.Schema({
     type: String,
     require: true
   },
-  issues_url: {
-    type: String,
-    required: true
-  },
   stargazers_count: {
     type: Number,
     default:0
@@ -28,6 +24,18 @@ const RepoSchema = new mongoose.Schema({
   score: {
     type: Number,
     default:0
+  },
+  languages: {
+    type: [String],
+    default: []
+  },
+  about: {
+    type: String,
+    default: ""
+  },
+  tags: {
+    type: [String],
+    default: []
   }
 });
 
