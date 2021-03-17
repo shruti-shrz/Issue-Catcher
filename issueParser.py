@@ -1,30 +1,79 @@
 import requests
 import json
 from bs4 import BeautifulSoup
-def issueparser(url_repo):
+def repo_parser(url_repo):
 	url = url_repo
 	plain_html_text = requests.get(url)
 	soup = BeautifulSoup(plain_html_text.text, "html.parser")
 	i=0
-	for sol in soup.findAll('div',{'class':'flex-auto'}):
-		k = sol.find('a')
-		if k != None:
-			n = k['href']
-			var = n.split('/')
-			if var[-1].isdigit():
-				print("Issue:  "+k.text)
-				print(n)
-				i = i+1
-				url2 = url_repo + '/' +var[-1]
-				plain_html_text2 = requests.get(url2)
-				soup2 = BeautifulSoup(plain_html_text2.text, "html.parser")
-				m = soup2.find('td')
+	repo_details = {}
+	#tags = soup.findAll('div',{'class':'f6'})
+	#print(tags)
+	repo_details['tag'] = []
+	for tag in soup.findAll('a',{'class':'topic-tag topic-tag-link'}):
+		t = tag.text.strip()
+		repo_details['tag'].append(t)
+
+	repo_details['lang'] = []
+	for lang in soup.findAll('span',{'class':'color-text-primary text-bold mr-1'}):
+		l = lang.text.strip()
+		repo_details['lang'].append(l)
+		
+
+	for forks in soup.findAll('a',{'class':'social-count'}):
+		f = forks.text.strip().replace(',', '')
+		if f[-1] == 'k':
+			f = float(f[0:len(f)-1])*1000
+		else:
+			f = float(f)
+		if "stars" not in repo_details.keys():
+			repo_details['stars'] = f
+		else:
+			repo_details['forks'] = f
+		
+
+	url_issues = url + '/issues'
+	plain_html_text_i = requests.get(url_issues)
+	soup_i = BeautifulSoup(plain_html_text_i.text, "html.parser")
+	# for open_issue in soup_i.findAll('a',{'class':'btn-link selected'}):
+	# 	print(open_issue.text)
+	for issue in soup_i.findAll('a',{'class':'btn-link'}):
+		
+		iss = issue.text.strip()
+		var = iss.split(' ')
+		f = var[0].replace(',', '')
+		if f[-1] == 'k':
+			f = float(f[0:len(f)-1])*1000
+		else:
+			f = float(f)
+		if "open_issue" not in repo_details.keys():
+			if var[1]=="Open":
+				repo_details['open_issue'] = f
+		if "close_issue" not in repo_details.keys():
+			if var[1]=="Closed":
+				repo_details['close_issue'] = f
+		
+	print(repo_details)
+	return repo_details
+	# for sol in soup.findAll('div',{'class':'flex-auto'}):
+	# 	k = sol.find('a')
+	# 	if k != None:
+	# 		n = k['href']
+	# 		var = n.split('/')
+	# 		if var[-1].isdigit():
+	# 			print("Issue:  "+k.text)
+	# 			print(n)
+	# 			i = i+1
+	# 			url2 = url_repo + '/' +var[-1]
+	# 			plain_html_text2 = requests.get(url2)
+	# 			soup2 = BeautifulSoup(plain_html_text2.text, "html.parser")
+	# 			m = soup2.find('td')
 				
-				if m != None:
-					q = m.find('p')
-					if q != None:
-						r = q.text
-						print("Issue Description:  "+r)
+	# 			if m != None:
+	# 				q = m.find('p')
+	# 				if q != None:
+	# 					r = q.text
+	# 					print("Issue Description:  "+r)
 						
 
 	 	# url2 = "https://www.codechef.com" + l
@@ -42,4 +91,24 @@ def issueparser(url_repo):
 	#  	k = j.find('p')
 	#  	print(j)
 	#  	print(k)
-issueparser('https://github.com/EbookFoundation/free-programming-books/issues')
+count = 0
+def getrepos(url):
+	global count
+	count += 1
+	plain_html_text = requests.get(url)
+	soup = BeautifulSoup(plain_html_text.text, "html.parser")
+	tag = soup.findAll('li',{'class':'repo-list-item'})
+	for sel in tag:
+		sel = sel.find('a')
+		print(sel['href'])
+		repo_url = "https://github.com" + sel['href']
+		repo_parser(repo_url)
+	next_page = soup.findAll('a',{'class':'next_page'})
+	if next_page == None or count == 2:
+		return
+	url_next = "https://github.com" + str(next_page[0]['href'])
+	getrepos(url_next)
+
+
+#repo_parser('https://github.com/tensorflow/tensorflow')
+getrepos('https://github.com/search?p=1&q=is%3Apublic&type=Repositories')
