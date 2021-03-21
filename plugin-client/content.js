@@ -24,8 +24,8 @@ if(url.includes("issues"))
 	{
 		//chrome.storage.sync.set({'userissue': res[res.length - 1]}, function(){
 		console.log("Issue Selected!!!")
-		console.log(res[res.length - 1]);
-		chrome.runtime.sendMessage({"issue":res[res.length - 1]});
+		console.log(url);
+		chrome.runtime.sendMessage({"issue":url});
 	//});
 	
 	}
