@@ -31,12 +31,66 @@ def get_ans(input_issue):
 	print(issue)
 	return ans
 
+def get_1000_issues(language, keywords):
+	keys = '+'.join(keywords)
+	url = 'https://github.com/search?q=is%3Aclosed+language%3A' + language + '+' + keys + '&type=issues'
+	get_issues(url)
+
+count = 0
+def get_issues(url):
+	global count
+	count += 1
+	plain_html_text = requests.get(url)
+	soup = BeautifulSoup(plain_html_text.text, "html.parser")
+	issues_10 = soup.findAll('div',{'class':'issue-list-item'})
+	for sel in issues_10:
+		sel = sel.find('div',{'class': 'markdown-title'}).find('a')
+		if 'issues' in sel['href']:
+			sel_issue_url = "https://github.com" + sel['href']
+			issue_parser(sel_issue_url)
+		elif 'pull' in sel['href']:
+			sel_pull_url = "https://github.com" + sel['href']
+			pull_req_parser(sel_pull_url)
+	next_page = soup.find('a',{'class':'next_page'})
+	if next_page == None or count == 2:
+		return
+	url_next = "https://github.com" + str(next_page['href'])
+	get_issues(url_next)
+
+def issue_parser(url):
+	issue = {}
+	plain_html_text = requests.get(url)
+	soup = BeautifulSoup(plain_html_text.text, "html.parser")
+	title = soup.find('span', {'class':'js-issue-title markdown-title'})
+	issue['title'] = title.text.strip()
+	issue['body'] = ''
+	body = soup.find('div', {'class':'edit-comment-hide'})
+	for b in body.findAll('td', {'class':'comment-body'}):
+		issue['body'] += b.text.replace('\n',' ').strip()
+	issue['labels'] = []
+	labels = soup.findAll('a', {'class': 'IssueLabel'})
+	for label in labels:
+		issue['labels'].append(label.text.strip())
+	issue['url'] = url
+	issues_1000.append(issue)
+
+def pull_req_parser(url):
+	issue = {}
+	plain_html_text = requests.get(url)
+	soup = BeautifulSoup(plain_html_text.text, "html.parser")
+	title = soup.find('span', {'class':'js-issue-title markdown-title'})
+	issue['title'] = title.text.strip()
+	issue['body'] = ''
+	body = soup.find('div', {'class':'edit-comment-hide'})
+	for b in body.findAll('td', {'class':'comment-body'}):
+		issue['body'] += b.text.replace('\n',' ').strip()
+	issue['url'] = url
+	issues_1000.append(issue)
 
 def repo_parser(url_repo):
 	url = url_repo
 	plain_html_text = requests.get(url)
 	soup = BeautifulSoup(plain_html_text.text, "html.parser")
-	i=0
 	repo_details = {}
 	#tags = soup.findAll('div',{'class':'f6'})
 	#print(tags)
@@ -114,7 +168,6 @@ def repo_parser(url_repo):
 	 	# print(m)i=i+1
 	 	# if i==20:
 	 	# 	break
-	print(i)
 	# url = "https://www.codechef.com/viewsolution/34866751"
 	# plain_html_text = requests.get(url)
 	# soup = BeautifulSoup(plain_html_text.text, "html.parser")
@@ -122,26 +175,29 @@ def repo_parser(url_repo):
 	#  	k = j.find('p')
 	#  	print(j)
 	#  	print(k)
-count = 0
-def getrepos(url):
-	global count
-	count += 1
-	plain_html_text = requests.get(url)
-	soup = BeautifulSoup(plain_html_text.text, "html.parser")
-	tag = soup.findAll('li',{'class':'repo-list-item'})
-	for sel in tag:
-		sel = sel.find('a')
-		print(sel['href'])
-		repo_url = "https://github.com" + sel['href']
-		repo_parser(repo_url)
-	next_page = soup.findAll('a',{'class':'next_page'})
-	if next_page == None or count == 2:
-		return
-	url_next = "https://github.com" + str(next_page[0]['href'])
-	getrepos(url_next)
+# count = 0
+# def getrepos(url):
+# 	global count
+# 	count += 1
+# 	plain_html_text = requests.get(url)
+# 	soup = BeautifulSoup(plain_html_text.text, "html.parser")
+# 	tag = soup.findAll('li',{'class':'repo-list-item'})
+# 	for sel in tag:
+# 		sel = sel.find('a')
+# 		print(sel['href'])
+# 		repo_url = "https://github.com" + sel['href']
+# 		repo_parser(repo_url)
+# 	next_page = soup.findAll('a',{'class':'next_page'})
+# 	if next_page == None or count == 2:
+# 		return
+# 	url_next = "https://github.com" + str(next_page[0]['href'])
+# 	getrepos(url_next)
 
 
 #repo_parser('https://github.com/tensorflow/tensorflow')
 #getrepos('https://github.com/search?p=1&q=is%3Apublic&type=Repositories')
 
-get_ans('https://github.com/tensorflow/tensorflow/issues/47973')
+#get_ans('https://github.com/tensorflow/tensorflow/issues/47973')
+
+get_1000_issues('Javascript', ['change','color','toast'])
+print(len(issues_1000))
