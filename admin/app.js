@@ -9,7 +9,9 @@ const mongo_pass = process.env.MONGO_PASS
 
 const MONGOURI = `mongodb+srv://pinky:${mongo_pass}@cluster0.hfcw3.mongodb.net/IssueCatcherDB?retryWrites=true&w=majority`
 mongoose.connect(MONGOURI,{
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+	useFindAndModify: false
 });
 
 mongoose.connection.on('connected',()=>{
@@ -54,7 +56,7 @@ async function GetRepos(url = "https://api.github.com/search/repositories?q=star
     })
     var result = await response.json()
     //console.log(response);
-    result.items.forEach(async repo => {
+    await result.items.forEach(async repo => {
         var repolang = await fetch(repo.languages_url, {
             "method" : "GET",
             "headers" : repolang_headers
@@ -72,15 +74,18 @@ async function GetRepos(url = "https://api.github.com/search/repositories?q=star
             about: repo.description,
             tags: topics
         });
-        repolist.push(repo_new);
+        //repolist.push(repo_new);
+        await repo_new.save();
     });
-    try {
-        await Repo.insertMany(repolist);
-        console.log("Inserted Batch " + c);
-        repolist = []
-    } catch(err) {
-        console.log(err);
-    }
+    console.log("Inserted Batch " + c);
+    //console.log(repolist);
+    // try {
+    //     const insres = await Repo.insertMany(repolist);
+    //     console.log(insres + " to insert" + c);
+    //     repolist = []
+    // } catch(err) {
+    //     console.log(err);
+    // }
 
     var link = response.headers.get("link")
     var links = link.split(",")
@@ -96,11 +101,11 @@ async function GetRepos(url = "https://api.github.com/search/repositories?q=star
         }
     });
     c = c + 1
-    if(next == "" || c == 1) {
+    if(next == "") {
         return //we r on last page and we need to stop recursion
     }
     else {
-        GetRepos(next)
+        await GetRepos(next)
     }
 
 }
