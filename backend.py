@@ -1,7 +1,8 @@
-import pymongo
-from pymongo import MongoClient
+#import pymongo
+#from pymongo import MongoClient
 from flask import Flask
 from flask import request
+from issueParser import *
 #cluster =  MongoClient("")
 #db = cluster["githubRepos"]
 #collection = db["repos_issues"]
@@ -18,6 +19,7 @@ def bootstrap():
 			var = request.form
 			k = var['issue']
 			print(k,type(k))
+			get_ans(k)
 			#myquery = {"issue_number":"test"}
 			#myissue = collection.find(myquery)
 			#for x in myissue:

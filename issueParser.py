@@ -1,6 +1,37 @@
 import requests
 import json
 from bs4 import BeautifulSoup
+
+issues_1000 = []
+
+def get_ans(input_issue):
+	ans = {}
+	issue = {}
+	url = input_issue
+	plain_html_text = requests.get(url)
+	soup = BeautifulSoup(plain_html_text.text, "html.parser")
+	title = soup.find('span', {'class':'js-issue-title markdown-title'})
+	issue['title'] = title.text.strip()
+	issue['body'] = ''
+	body = soup.find('div', {'class':'edit-comment-hide'})
+	for b in body.findAll('td', {'class':'comment-body'}):
+		issue['body'] += b.text.replace('\n',' ').strip()
+	issue['labels'] = []
+	labels = soup.findAll('a', {'class': 'IssueLabel'})
+	for label in labels:
+		issue['labels'].append(label.text.strip())
+	repo_url_end = url.find('/issues') 
+	repo_url = url[0:repo_url_end]
+	repo_html_text = requests.get(repo_url)
+	soup = BeautifulSoup(repo_html_text.text, "html.parser")
+	issue['lang'] = []
+	for lang in soup.findAll('span',{'class':'color-text-primary text-bold mr-1'}):
+		l = lang.text.strip()
+		issue['lang'].append(l)
+	print(issue)
+	return ans
+
+
 def repo_parser(url_repo):
 	url = url_repo
 	plain_html_text = requests.get(url)
@@ -111,4 +142,6 @@ def getrepos(url):
 
 
 #repo_parser('https://github.com/tensorflow/tensorflow')
-getrepos('https://github.com/search?p=1&q=is%3Apublic&type=Repositories')
+#getrepos('https://github.com/search?p=1&q=is%3Apublic&type=Repositories')
+
+get_ans('https://github.com/tensorflow/tensorflow/issues/47973')
