@@ -4,7 +4,8 @@ from flask import Flask
 from flask import request, jsonify
 from issueParser import *
 from flask_cors import CORS
-cluster =  MongoClient("mongodb+srv://pinky:pinkyshru@cluster0.hfcw3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+from settings import MONGOPASS
+cluster =  MongoClient('mongodb+srv://pinky:'+MONGOPASS+'@cluster0.hfcw3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
 db = cluster['IssueDB']
 collection = db['issues']
 k = "hello"
