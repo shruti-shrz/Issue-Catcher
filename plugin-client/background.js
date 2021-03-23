@@ -31,8 +31,8 @@ $.ajax({
     dataType : 'json',
     data : response,
     success : function(data){
-        alert("success:"+JSON.stringify(data));
-        console.log(JSON.stringify(data))
+        document.getElementById("c_alert").innerHTML = "heyy";
+
     },
     error: function (xhr, ajaxOptions, thrownError) { //Add these parameters to display the required response
         alert(xhr.status);

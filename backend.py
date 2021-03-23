@@ -29,7 +29,7 @@ def bootstrap():
 			# myissue = collection.find(myquery)
 			#print(ans)
 			# if myissue == None:
-			ans = get_ans(k)
+			#ans = get_ans(k)
 			# 	i = {'url' : k, 'ans': ans}
 			# 	collection.insert_one(i)
 			# else:
