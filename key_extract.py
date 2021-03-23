@@ -9,17 +9,16 @@ import re
 np.random.seed(400)
 import nltk
 
-
 import pandas as pd
 stemmer = SnowballStemmer("english")
 # nltk.download('wordnet')
 # nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
 import nltk.tokenize as nt
-custom_stopwords = ["warn","use","ve","custom","error","true","false",'issue',"message",'free','variable','begin','read','named','open','lines','non','recommend','approach','conventional','statement','bad','sample','output','input']
+custom_stopwords = ["warn","use","ve","error","true","false",'issue',"message",'begin','read','named','open','lines','non','approach','conventional','statement','sample','output','input']
 def lemmatizer(text):
 	return WordNetLemmatizer().lemmatize(text,pos='v')
-#print(WordNetLemmatizer().lemmatize("processing",pos='v'))
+
 def preprocess(text):
     result=[]
     for token in gensim.utils.simple_preprocess(text) :
@@ -28,8 +27,8 @@ def preprocess(text):
     		result.append(token)
             
     return result
-new_sample = "Mask RCNN tflite detection speed on android too slow. System information Mobile device (e.g. iPhone 8, Pixel 2, Samsung Galaxy) if the issue happens on mobile device: Android mobile TensorFlow installed from (source or binary): Binary TensorFlow version (use command below): 2.4.0 Python version: 3.7 Describe the current behavior We have converted Mask RCNN to TFLite using this link: https://wathek.medium.com/convert-mask-r-cnn-model-to-tflite-with-tensorflow-2-3-57160d3be18d and Tensorflow 2.4.0 We have used byte buffers for the input and output tensors and have the GPU delegate, multithreading enabled. However it is taking around 35 seconds for detection, which is really not feasible in terms of latency. Describe the expected behavior We expected the inference time to be around 3-5 seconds. How can we reduce the time taken for detection? Are there any changes we can make to the model other than those done in the link above? Any help would be appreciated, thank you."
-#new_sample = re.sub('[^a-zA-Z0-9]', ' ', sample)
+new_sample = "Mask RCNN tflite detection speed on android too slow. System information Mobile device (e.g. iPhone 8, Pixel 2, Samsung Galaxy) if the issue happens on mobile device: Android mobile TensorFlow installed from (source or binary): Binary TensorFlow version (use command below): 2.4.0 Python version: 3.7 Describe the current behavior We have converted Mask RCNN to TFLite using this link: https://wathek.medium.com/convert-mask-r-cnn-model-to-tflite-with-tensorflow-2-3-57160d3be18d and Tensorflow-2.4.0 We have used byte buffers for the input and output tensors and have the GPU delegate, multithreading enabled. However it is taking around 35 seconds for detection, which is really not feasible in terms of latency. Describe the expected behavior We expected the inference time to be around 3-5 seconds. How can we reduce the time taken for detection? Are there any changes we can make to the model other than those done in the link above? Any help would be appreciated, thank you."
+new_sample = re.sub('[^a-zA-Z0-9]', ' ', new_sample)
 #new_sample = re.sub('\s+',' ',new_sample)
 def entity_extractor(text):
 	ss=nt.sent_tokenize(text)
@@ -40,7 +39,17 @@ def file_content(word):
 	with open("technical_keyword.txt","r") as read_obj:
 		for line in read_obj:
 			if word in line:
-				return True
+				#print("l: ",line)
+				var = re.split(r"[^a-zA-Z0-9]", line)
+				#print("s: ",var)
+				for i in var:
+					#print(i, " before ", word)
+					i = stemmer.stem(i)
+					word = stemmer.stem(word)
+					#print(i, " after ", word)
+					if i==word:
+
+						return True
 	return False
 
 def nlp_LDA(sample):
@@ -58,6 +67,7 @@ def nlp_LDA(sample):
                                    passes = 10,
                                    workers = 1)
 	final_words = []
+	final_keys = []
 	check_set =set()
 	for idx, topic in lda_model.show_topics(-1,10):
 		var = topic.split("+")
@@ -67,11 +77,16 @@ def nlp_LDA(sample):
 			if word not in check_set:
 				final_words.append(word)
 				check_set.add(word)
-	print(check_set)
+	#print(check_set)
 	for word in final_words:
 		res = file_content(word)
 		if res == True:
+			final_keys.append(word)
 			print("IN  -> ",word)
+	
+	# s = file_content("process")
+	# print(s)
+	return final_keys
 			
 	
 	# pos_sentences = [nltk.pos_tag(sent) for sent in final_words]
@@ -83,6 +98,19 @@ def nlp_LDA(sample):
 	#                                                      dictionary[bow_doc_x[i][0]], 
 	#                                                      bow_doc_x[i][1]))
 
-if __name__ == '__main__':
-	nlp_LDA(new_sample)
+def similar_issues_score(input_issue_keywords, issue_keywords):
+	sim_count =0
+	for i in input_issue_keywords:
+		if i in issue_keywords:
+			sim_count+=1
+	return sim_count
+
+
+
+
+
+
+
+
+	
 

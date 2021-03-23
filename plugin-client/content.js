@@ -19,6 +19,7 @@ if(url.includes("issues"))
 {
 	var res = url.split("/");
 	var l = res[res.length - 1]
+	console.log(l)
 	let isnum = /^\d+$/.test(l);
 	if(isnum)
 	{

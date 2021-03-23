@@ -1,13 +1,15 @@
 import requests
 import json
 from bs4 import BeautifulSoup
+from key_extract import *
 
 issues_1000 = []
-
+issue = {}
+issue_score = []
 def get_ans(input_issue):
-	ans = {}
-	issue = {}
+	global issue
 	url = input_issue
+	ans = []
 	plain_html_text = requests.get(url)
 	soup = BeautifulSoup(plain_html_text.text, "html.parser")
 	title = soup.find('span', {'class':'js-issue-title markdown-title'})
@@ -29,6 +31,14 @@ def get_ans(input_issue):
 		l = lang.text.strip()
 		issue['lang'].append(l)
 	print(issue)
+	input_issue_key = nlp_LDA(issue['title']+issue['body'])
+	get_1000_issues(issue['lang'][0], input_issue_key[0:5])
+
+	for i in issues_1000:
+		issue_key = nlp_LDA(i['title']+i['body'])
+		s= similar_issues_score(input_issue_key,issue_key)
+		issue_score.append({'url':i['url'],'score':s})
+	ans = sorted(issue_score,key = lambda i: i['score'], reverse = True)[0:5]
 	return ans
 
 def get_1000_issues(language, keywords):
@@ -198,6 +208,9 @@ def repo_parser(url_repo):
 #getrepos('https://github.com/search?p=1&q=is%3Apublic&type=Repositories')
 
 #get_ans('https://github.com/tensorflow/tensorflow/issues/47973')
+# if __name__ == '__main__':
+# 	get_1000_issues('Javascript', ['change','color','toast'])
+# 	input_issue_key = nlp_LDA(new_sample)
+# 	for i in ip.issues_1000:
 
-get_1000_issues('Javascript', ['change','color','toast'])
-print(len(issues_1000))
+# print(len(issues_1000))
