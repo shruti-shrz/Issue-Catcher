@@ -3,13 +3,15 @@ from pymongo import MongoClient
 from flask import Flask
 from flask import request, jsonify
 from issueParser import *
+from flask_cors import CORS
 # cluster =  MongoClient("")
 # db = cluster['IssueDB']
 # collection = db['issues']
 k = "hello"
-app = Flask(__name__)
 ans = []
-@app.route('/', methods=['GET', 'POST'])
+app = Flask(__name__)
+CORS(app)
+@app.route('/', methods=['POST' , 'GET'])
 def bootstrap():
 	global ans
 	global k
@@ -21,13 +23,13 @@ def bootstrap():
 			var = request.form
 			k = var['issue']
 			print(k,type(k))
-			ans = get_ans(k)
+			#ans = get_ans(k)
 			# myquery = {"url":k}
 			# myissue = None
 			# myissue = collection.find(myquery)
-			print(ans)
+			#print(ans)
 			# if myissue == None:
-			# 	ans = get_ans(k)
+			ans = get_ans(k)
 			# 	i = {'url' : k, 'ans': ans}
 			# 	collection.insert_one(i)
 			# else:
@@ -38,7 +40,7 @@ def bootstrap():
 			# 	return jsonify({'error':'Similar Issues Not Found'})
 			#for x in myissue:
 			#	print(x)
-	return k
+	return {"url":ans}
 
 if __name__ == "__main__":
     app.run(debug=True)

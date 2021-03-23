@@ -31,9 +31,13 @@ def get_ans(input_issue):
 		l = lang.text.strip()
 		issue['lang'].append(l)
 	print(issue)
-	input_issue_key = nlp_LDA(issue['title']+issue['body'])
-	get_1000_issues(issue['lang'][0], input_issue_key[0:5])
+	input_key = nlp_LDA(issue['title'])
+	if len(input_key) >= 5:
+		get_1000_issues(issue['lang'][0], input_key[0:5])
+	else:
+		get_1000_issues(issue['lang'][0], input_key[0:len(input_key)])
 
+	input_issue_key = nlp_LDA(issue['title']+issue['body'])
 	for i in issues_1000:
 		issue_key = nlp_LDA(i['title']+i['body'])
 		s= similar_issues_score(input_issue_key,issue_key)
@@ -214,3 +218,5 @@ def repo_parser(url_repo):
 # 	for i in ip.issues_1000:
 
 # print(len(issues_1000))
+# if __name__ == "__main__":
+#     print(get_ans("https://github.com/ionic-team/ionic-v3/issues/767"))
