@@ -4,9 +4,9 @@ from flask import Flask
 from flask import request, jsonify
 from issueParser import *
 from flask_cors import CORS
-# cluster =  MongoClient("")
-# db = cluster['IssueDB']
-# collection = db['issues']
+cluster =  MongoClient("mongodb://pranshru:MaYln5lrN8EobbxbYZeOPHat9sIyvTX7bo6LZAgNizerY9soW7TnjdATsWuzThZGlZZB0oAaerXO0lIvSnjyiA==@pranshru.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@pranshru@")
+db = cluster['IssueDB']
+collection = db['issues']
 k = "hello"
 ans = []
 app = Flask(__name__)
@@ -23,21 +23,22 @@ def bootstrap():
 			var = request.form
 			k = var['issue']
 			print(k,type(k))
-			#ans = get_ans(k)
-			# myquery = {"url":k}
-			# myissue = None
-			# myissue = collection.find(myquery)
+			myquery = {"url":k}
+			myissue = None
+			myissue = collection.find(myquery)
 			#print(ans)
-			# if myissue == None:
-			ans = get_ans(k)
-			# 	i = {'url' : k, 'ans': ans}
-			# 	collection.insert_one(i)
-			# else:
-			# 	ans = myissue['ans']
-			# if len(ans) > 0:
-			# 	return jsonify(ans)
-			# else:
-			# 	return jsonify({'error':'Similar Issues Not Found'})
+			if myissue == None:
+				ans = get_ans(k)
+				i = {}
+				i['url'] = k
+				i['ans'] = ans
+				collection.insert_one(i)
+			else:
+			 	ans = myissue['ans']
+			if len(ans) > 0:
+			 	return jsonify(ans)
+			else:
+			 	return jsonify({'error':'Similar Issues Not Found'})
 			#for x in myissue:
 			#	print(x)
 	return {"url":ans}
