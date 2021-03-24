@@ -15,7 +15,7 @@ stemmer = SnowballStemmer("english")
 # nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
 import nltk.tokenize as nt
-custom_stopwords = ["warn","use","ve","error","true","false",'issue',"message",'begin','read','named','open','lines','non','approach','conventional','statement','sample','output','input']
+custom_stopwords = ['up','inside',"warn","use","ve","error","true","false",'issue','begin','read','named','open','lines','non','approach','conventional','statement','sample']
 def lemmatizer(text):
 	return WordNetLemmatizer().lemmatize(text,pos='v')
 
