@@ -33,9 +33,9 @@ def get_ans(input_issue):
 	print(issue)
 	input_key = nlp_LDA(issue['title'])
 	if len(input_key) >= 5:
-		get_1000_issues(issue['lang'][0], input_key[0:5])
+		get_1000_issues(issue['lang'][0], input_key[0:5], url)
 	else:
-		get_1000_issues(issue['lang'][0], input_key[0:len(input_key)])
+		get_1000_issues(issue['lang'][0], input_key[0:len(input_key)], url)
 
 	input_issue_key = nlp_LDA(issue['title']+issue['body'])
 	for i in issues_1000:
@@ -45,13 +45,13 @@ def get_ans(input_issue):
 	ans = sorted(issue_score,key = lambda i: i['score'], reverse = True)[0:5]
 	return ans
 
-def get_1000_issues(language, keywords):
+def get_1000_issues(language, keywords, inp_url):
 	keys = '+'.join(keywords)
-	url = 'https://github.com/search?q=is%3Aclosed+language%3A' + language + '+' + keys + '&type=issues'
-	get_issues(url)
+	url = 'https://github.com/search?q=' + keys + '+in%3Atitle&type=issues'
+	get_issues(url, inp_url)
 
 count = 0
-def get_issues(url):
+def get_issues(url, inp_url):
 	global count
 	count += 1
 	plain_html_text = requests.get(url)
@@ -61,7 +61,8 @@ def get_issues(url):
 		sel = sel.find('div',{'class': 'markdown-title'}).find('a')
 		if 'issues' in sel['href']:
 			sel_issue_url = "https://github.com" + sel['href']
-			issue_parser(sel_issue_url)
+			if sel_issue_url != inp_url:
+				issue_parser(sel_issue_url)
 		elif 'pull' in sel['href']:
 			sel_pull_url = "https://github.com" + sel['href']
 			pull_req_parser(sel_pull_url)
@@ -69,13 +70,15 @@ def get_issues(url):
 	if next_page == None or count == 2:
 		return
 	url_next = "https://github.com" + str(next_page['href'])
-	get_issues(url_next)
+	get_issues(url_next, inp_url)
 
 def issue_parser(url):
 	issue = {}
+	print(url)
 	plain_html_text = requests.get(url)
 	soup = BeautifulSoup(plain_html_text.text, "html.parser")
 	title = soup.find('span', {'class':'js-issue-title markdown-title'})
+	print(title)
 	issue['title'] = title.text.strip()
 	issue['body'] = ''
 	body = soup.find('div', {'class':'edit-comment-hide'})

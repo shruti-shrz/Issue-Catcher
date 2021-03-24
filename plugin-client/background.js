@@ -20,13 +20,9 @@
 function createPopup(data){
 var popup = open("", "Popup", "width=300,height=200");
 var txtOk = popup.document.createElement("div");
-var aOk = popup.document.createElement("div");
-txtOk.innerHTML = "<strong><h2>Similar Issues</h2></strong>";
+//var aOk = popup.document.createElement("div");
+txtOk.innerHTML = "<strong><h2>Similar Issues</h2></strong>" + data;
 popup.document.body.appendChild(txtOk);
-    aOk.innerHTML += data;
-    popup.document.body.appendChild(aOk);
- 
-
 
 }
 
@@ -42,15 +38,18 @@ $.ajax({
     dataType : 'json',
     data : response,
     success : function(data){
-        var s = [];
-        int k=0;
-        for(i in data["url"])
+        var s = '';
+        var d = JSON.parse(JSON.stringify(data))
+        //alert(d);
+        alert(d.url)
+        for(var i = 0; i < d.url.length; i++)
         {
-           var h = i[k]['url']
-            var l = "<a href="+h+">"+h+"</a> <br />" 
-            s.push(l)
-            k++
+
+            var h = d.url[i].url
+            var l = "<a href=\""+h+"\">"+h+"</a></br>"
+            s += l
         }
+        //alert(s)
        //  h = data["url"][0]["url"]
        // var s = ["<a href="+h+">"+h+"</a>","<a href=www.google.com>www.google.com</a>"]
        createPopup(s);

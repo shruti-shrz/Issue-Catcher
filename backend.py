@@ -12,7 +12,7 @@ k = "hello"
 ans = []
 app = Flask(__name__)
 CORS(app)
-@app.route('/', methods=['POST' , 'GET'])
+@app.route('/', methods=['POST', 'GET'])
 def bootstrap():
 	global ans
 	global k
@@ -26,7 +26,18 @@ def bootstrap():
 			print(k,type(k))
 			myquery = {"url":k}
 			myissue = None
-			myissue = collection.find(myquery)
+			myissue = collection.find_one(myquery)
+			#print(ans)
+			# if myissue == None:
+			#ans = get_ans(k)
+			# 	i = {'url' : k, 'ans': ans}
+			# 	collection.insert_one(i)
+			# else:
+			# 	ans = myissue['ans']
+			# if len(ans) > 0:
+			# 	return jsonify(ans)
+			# else:
+			# 	return jsonify({'error':'Similar Issues Not Found'})
 			if myissue == None:
 				ans = get_ans(k)
 				i = {}
@@ -34,15 +45,14 @@ def bootstrap():
 				i['ans'] = ans
 				collection.insert_one(i)
 			else:
-			 	ans = myissue['ans']
+				print("Picked from db!")
+				ans = myissue['ans']
+				print(ans)
 			if len(ans) > 0:
-			 	return {"url":ans}
+			 	return jsonify({'url' : ans})
 			else:
 			 	return jsonify({'error':'Similar Issues Not Found'})
-			#for x in myissue:
-			#	print(x)
-			print(ans)
-	#return {"url":ans}
+	return jsonify({'url' : ans})
 
 if __name__ == "__main__":
     app.run(debug=True)
