@@ -17,7 +17,18 @@
 //   return response.json(); // parses JSON response into native JavaScript objects
 // }
 
+function createPopup(data){
+var popup = open("", "Popup", "width=300,height=200");
+var txtOk = popup.document.createElement("div");
+var aOk = popup.document.createElement("a");
+txtOk.innerHTML = "<strong><h2>Similar Issues</h2></strong>";
+popup.document.body.appendChild(txtOk);
+    aOk.innerHTML = aOk.innerHTML + data + "<br />";
+    popup.document.body.appendChild(aOk);
+ 
 
+
+}
 
 
 chrome.runtime.onMessage.addListener(function(response, sender, sendResponse){
@@ -31,7 +42,19 @@ $.ajax({
     dataType : 'json',
     data : response,
     success : function(data){
-        document.getElementById("c_alert").innerHTML = "heyy";
+        var s = [];
+        int k=0;
+        for(i in data["url"])
+        {
+           var h = i[k]['url']
+            var l = "<a href="+h+">"+h+"</a>"
+            s.push(l)
+            k++
+        }
+       //  h = data["url"][0]["url"]
+       // var s = ["<a href="+h+">"+h+"</a>","<a href=www.google.com>www.google.com</a>"]
+       createPopup(s);
+       //alert("heyy")
 
     },
     error: function (xhr, ajaxOptions, thrownError) { //Add these parameters to display the required response

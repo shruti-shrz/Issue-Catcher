@@ -52,6 +52,7 @@ def bootstrap():
 			 	return jsonify({'error':'Similar Issues Not Found'})
 			#for x in myissue:
 			#	print(x)
+			print(ans)
 	return {"url":ans}
 
 if __name__ == "__main__":
