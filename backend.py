@@ -5,9 +5,9 @@ from flask import request, jsonify
 from issueParser import *
 from flask_cors import CORS
 from settings import MONGOPASS
-cluster =  MongoClient('mongodb+srv://pinky:'+MONGOPASS+'@cluster0.hfcw3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
-db = cluster['IssueDB']
-collection = db['issues']
+cluster =  MongoClient('mongodb://pinky:'+MONGOPASS+'@cluster0-shard-00-00.hfcw3.mongodb.net:27017,cluster0-shard-00-01.hfcw3.mongodb.net:27017,cluster0-shard-00-02.hfcw3.mongodb.net:27017/IssueDB?ssl=true&replicaSet=atlas-10ak0x-shard-0&authSource=admin&retryWrites=true&w=majority')
+#db = cluster['IssueDB']
+collection = cluster['issues']
 k = "hello"
 ans = []
 app = Flask(__name__)
@@ -27,17 +27,6 @@ def bootstrap():
 			myquery = {"url":k}
 			myissue = None
 			myissue = collection.find(myquery)
-			#print(ans)
-			# if myissue == None:
-			#ans = get_ans(k)
-			# 	i = {'url' : k, 'ans': ans}
-			# 	collection.insert_one(i)
-			# else:
-			# 	ans = myissue['ans']
-			# if len(ans) > 0:
-			# 	return jsonify(ans)
-			# else:
-			# 	return jsonify({'error':'Similar Issues Not Found'})
 			if myissue == None:
 				ans = get_ans(k)
 				i = {}
@@ -47,13 +36,13 @@ def bootstrap():
 			else:
 			 	ans = myissue['ans']
 			if len(ans) > 0:
-			 	return jsonify(ans)
+			 	return {"url":ans}
 			else:
 			 	return jsonify({'error':'Similar Issues Not Found'})
 			#for x in myissue:
 			#	print(x)
 			print(ans)
-	return {"url":ans}
+	#return {"url":ans}
 
 if __name__ == "__main__":
     app.run(debug=True)

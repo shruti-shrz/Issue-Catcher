@@ -20,10 +20,10 @@
 function createPopup(data){
 var popup = open("", "Popup", "width=300,height=200");
 var txtOk = popup.document.createElement("div");
-var aOk = popup.document.createElement("a");
+var aOk = popup.document.createElement("div");
 txtOk.innerHTML = "<strong><h2>Similar Issues</h2></strong>";
 popup.document.body.appendChild(txtOk);
-    aOk.innerHTML = aOk.innerHTML + data + "<br />";
+    aOk.innerHTML += data;
     popup.document.body.appendChild(aOk);
  
 
@@ -47,7 +47,7 @@ $.ajax({
         for(i in data["url"])
         {
            var h = i[k]['url']
-            var l = "<a href="+h+">"+h+"</a>"
+            var l = "<a href="+h+">"+h+"</a> <br />" 
             s.push(l)
             k++
         }
