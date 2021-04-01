@@ -6,6 +6,39 @@ from key_extract import *
 issues_1000 = []
 issue = {}
 issue_score = []
+nex_count = 0
+other_issues = []
+def get_other_issues(repo_url):
+	global count
+	global other_issue
+	url = ""
+	if count == 0:
+		var = repo_url.split('/')
+		n = len(var)
+		print(var)
+		#i = 2
+		for i in range(n-2):
+			url += var[i] + '/'
+			i+=1
+		url+="issues?page=1&q=is%3Aissue+is%3Aopen"
+		count +=1
+	else:
+		url = repo_url
+	plain_html_text = requests.get(url)
+	soup = BeautifulSoup(plain_html_text.text, "html.parser")
+	res = soup.find('div', {'aria-label':'Issues'})
+	res2 = res.findAll('div', {'class':'flex-auto min-width-0 p-2 pr-3 pr-md-2'})
+	for sol in res2:
+		h = sol.find('a')
+		other_issue.append(h['href'])
+	res = soup.find('div',{'role':'navigation'})
+	res2 = res.find('a',{'rel':'next'})
+	if res2==None:
+		return
+	url_next = 'https://github.com' + res2['href']
+	get_other_issues(url_next)
+
+
 def get_ans(input_issue):
 	global issue
 	url = input_issue
@@ -223,3 +256,4 @@ def repo_parser(url_repo):
 # print(len(issues_1000))
 # if __name__ == "__main__":
 #     print(get_ans("https://github.com/ionic-team/ionic-v3/issues/767"))
+#get_other_issues('https://github.com/facebook/react/issues/21151')

@@ -5,9 +5,10 @@ from flask import request, jsonify
 from issueParser import *
 from flask_cors import CORS
 from settings import MONGOPASS
-cluster =  MongoClient('mongodb://pinky:'+MONGOPASS+'@cluster0-shard-00-00.hfcw3.mongodb.net:27017,cluster0-shard-00-01.hfcw3.mongodb.net:27017,cluster0-shard-00-02.hfcw3.mongodb.net:27017/IssueDB?ssl=true&replicaSet=atlas-10ak0x-shard-0&authSource=admin&retryWrites=true&w=majority')
-#db = cluster['IssueDB']
-collection = cluster['issues']
+import threading
+cluster =  MongoClient('mongodb+srv://pinky:'+MONGOPASS+'@cluster0.hfcw3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
+db = cluster['IssueDB']
+collection = db['issues']
 k = "hello"
 ans = []
 app = Flask(__name__)
@@ -48,11 +49,30 @@ def bootstrap():
 				print("Picked from db!")
 				ans = myissue['ans']
 				print(ans)
+			def fill_other_issues(**kwargs):
+				url_rep = kwargs.get('post_data', {})
+				other_issue.clear()
+				get_other_issues(url_rep)
+				for i in other_issue:
+					myquery = {"url":i}
+					myissue = None
+					myissue = collection.find_one(myquery)
+					if myissue == None:
+						ans = get_ans(i)
+						j = {}
+						j['url'] = i
+						j['ans'] = ans
+						collection.insert_one(j)
+					else:
+						print("issue already there!!")
+			thread = threading.Thread(target=fill_other_issues, kwargs={'post_data': k})
+			thread.start()
 			if len(ans) > 0:
 			 	return jsonify({'url' : ans})
 			else:
 			 	return jsonify({'error':'Similar Issues Not Found'})
 	return jsonify({'url' : ans})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
