@@ -5,6 +5,8 @@ from flask import request, jsonify
 from issueParser import *
 from flask_cors import CORS
 from settings import MONGOPASS
+from datetime import *
+
 cluster =  MongoClient('mongodb+srv://pinky:'+MONGOPASS+'@cluster0.hfcw3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
 db = cluster['IssueDB']
 collection = db['issues']
@@ -43,6 +45,7 @@ def bootstrap():
 				i = {}
 				i['url'] = k
 				i['ans'] = ans
+				i['timestamp'] = date.today()
 				collection.insert_one(i)
 			else:
 				print("Picked from db!")
@@ -53,6 +56,30 @@ def bootstrap():
 			else:
 			 	return jsonify({'error':'Similar Issues Not Found'})
 	return jsonify({'url' : ans})
+
+@app.route('/admin', methods=['GET'])
+def admin():
+	today = date.today()
+	i = 0
+	limit = 20
+	flag = 0
+	c = 0
+	while flag == 0:
+		issues = collection.find({}, {'timestamp': {'$lt': today - timedelta(days = 30)}}).skip(i*limit).limit(limit)
+		if issues == None:
+			flag = 1
+			break
+		for issue in issues:
+			if issue != None:
+				new_res = {'$set': {'ans': get_ans(issue['url'])}}
+				collection.update_one({'url': issue['url']}, new_res)
+				c += 1
+			else:
+				flag = 1
+				break
+		i += 1
+	return jsonify({'res': str(c) + " issues updated"})				
+
 
 if __name__ == "__main__":
     app.run(debug=True)

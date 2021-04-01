@@ -40,7 +40,7 @@ $.ajax({
         var s = '';
         var d = JSON.parse(JSON.stringify(data))
         //alert(d);
-        alert(d.url)
+        //alert(d.url)
         for(var i = 0; i < d.url.length; i++)
         {
             var h = d.url[i].url
