@@ -19,6 +19,7 @@ CORS(app)
 def bootstrap():
 	global ans
 	global k
+	#print("Heyyy ",other_issues)
 	if request.method == 'POST':
 		if not request.form:
 			print("nothing!!!")
@@ -46,17 +47,22 @@ def bootstrap():
 				i = {}
 				i['url'] = k
 				i['ans'] = ans
-				i['timestamp'] = date.today()
+				#i['timestamp'] = date.today()
 				collection.insert_one(i)
 			else:
 				print("Picked from db!")
 				ans = myissue['ans']
-				print(ans)
+				#print(ans)
 			def fill_other_issues(**kwargs):
+				#global other_issues
 				url_rep = kwargs.get('post_data', {})
-				other_issue.clear()
+				other_issues.clear()
+				v = url_rep.rfind('/')
+				url_rep = url_rep[:v]
 				get_other_issues(url_rep)
-				for i in other_issue:
+				#print(other_issues, "     ==    ")
+				for i in other_issues:
+					i = "https://github.com" + i
 					myquery = {"url":i}
 					myissue = None
 					myissue = collection.find_one(myquery)
@@ -65,6 +71,8 @@ def bootstrap():
 						j = {}
 						j['url'] = i
 						j['ans'] = ans
+						#print(j)
+						#print("------NEXT------")
 						collection.insert_one(j)
 					else:
 						print("issue already there!!")

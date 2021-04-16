@@ -18,11 +18,14 @@
 // }
 
 function createPopup(data){
-var popup = open("", "Popup", "width=300,height=200");
+    
+var r = window.confirm("Do you want to see Similar Issues?");
+if(r == true)
+{var popup = open("", "Popup", "width=300,height=200");
 var txtOk = popup.document.createElement("div");
 //var aOk = popup.document.createElement("div");
 txtOk.innerHTML = "<strong><h2>Similar Issues</h2></strong>" + data;
-popup.document.body.appendChild(txtOk);
+popup.document.body.appendChild(txtOk);}
 
 }
 
