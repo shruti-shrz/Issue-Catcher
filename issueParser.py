@@ -2,6 +2,7 @@ import requests
 import json
 from bs4 import BeautifulSoup
 from key_extract import *
+from similarBert import *
 
 issues_1000 = []
 issue = {}
@@ -66,12 +67,17 @@ def get_ans(input_issue):
 		get_1000_issues(issue['lang'][0], input_key[0:len(input_key)], url)
 
 	input_issue_key = nlp_LDA(issue['title']+issue['body'])
+	text_list = []
+	url_list = []
+	text_list.append(issue['title'] + issue['body'])
+	url_list.append(url)
 	for i in issues_1000:
-		issue_key = nlp_LDA(i['title']+i['body'])
-		s= similar_issues_score(input_issue_key,issue_key)
-		issue_score.append({'url':i['url'],'score':s})
-	ans = sorted(issue_score,key = lambda i: i['score'], reverse = True)[0:5]
-	return ans
+		text_list.append(i['title'] + i['body'])
+		url_list.append(i['url'])
+	ans = getSimilarBert(url_list, text_list)
+	print('===========')
+	print(ans, end = '\n=============\n')
+	return ans[0:5]
 
 def get_1000_issues(language, keywords, inp_url):
 	keys = '+'.join(keywords)
@@ -185,6 +191,7 @@ def repo_parser(url_repo):
 		
 	print(repo_details)
 	return repo_details
+
 	# for sol in soup.findAll('div',{'class':'flex-auto'}):
 	# 	k = sol.find('a')
 	# 	if k != None:
