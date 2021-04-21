@@ -21,11 +21,23 @@ function createPopup(data){
     
 var r = window.confirm("Do you want to see Similar Issues?");
 if(r == true)
-{var popup = open("", "Popup", "width=300,height=200");
-var txtOk = popup.document.createElement("div");
-//var aOk = popup.document.createElement("div");
-txtOk.innerHTML = "<strong><h2>Similar Issues</h2></strong>" + data;
-popup.document.body.appendChild(txtOk);}
+{
+var popup = window.open("",'_blank',"toolbar=yes,scrollbars=yes,resizable=yes,top=100,left=500,width=500,height=300");
+//popup.onload = function() { this.document.title = "your new title"; }
+
+var t_txt = popup.document.createElement("div");
+var ul_list = popup.document.createElement("UL");
+ul_list.setAttribute("id", "ullist");
+popup.document.body.style =  "background: #ff9999;" ;
+t_txt.innerHTML = "<strong><h2>Similar Issues</h2></strong>";
+popup.document.body.appendChild(t_txt);
+ul_list.style = "background: #ffe5e5; padding: 20px;"
+ul_list.innerHTML = data;
+popup.document.body.appendChild(ul_list);
+let menu = popup.document.getElementById('ullist');
+menu.removeChild(menu.lastElementChild);
+popup.document.title = "Similar Issues";
+}
 
 }
 
@@ -49,10 +61,11 @@ $.ajax({
         {
 
             var h = d.url[i].url
-            var l = "<a href=\""+h+"\">"+h+"</a></br>"
+            var l = "<li style = \"margin-left: 20px;font-size:15px;\"><a href =\""+h+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+h+"</a><li>"
             s += l
         }
-        //alert(s)
+        //s+="<ol>"
+       // alert(s)
        //  h = data["url"][0]["url"]
        // var s = ["<a href="+h+">"+h+"</a>","<a href=www.google.com>www.google.com</a>"]
        createPopup(s);
