@@ -77,7 +77,9 @@ def get_ans(input_issue):
 	ans = getSimilarBert(url_list, text_list)
 	print('===========')
 	print(ans, end = '\n=============\n')
-	return ans[0:5]
+	for i in range(1, min(6, len(ans))):
+		ans[i]['score'] = int(ans[i]['score']*100)
+	return ans[1:6]
 
 def get_1000_issues(language, keywords, inp_url):
 	keys = '+'.join(keywords)
