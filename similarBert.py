@@ -8,42 +8,22 @@ import re
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 
-# def most_similar(doc_id,similarity_matrix,matrix):
-#     print (f'Document: {documents_df.iloc[doc_id]["documents"]}')
-#     print ('\n')
-#     print (f'Similar Documents using {matrix}:')
-#     if matrix=='Cosine Similarity':
-#         print(np.argsort(similarity_matrix[doc_id]))
-#         similar_ix=np.argsort(similarity_matrix[doc_id])[::-1]
-#         print(similar_ix)
-#     elif matrix=='Euclidean Distance':
-#         similar_ix=np.argsort(similarity_matrix[doc_id])
-#     for ix in similar_ix:
-#         if ix==doc_id:
-#             continue
-#         print('\n')
-#         print (f'Document: {documents_df.iloc[ix]["documents"]}')
-#         print (f'{matrix} : {similarity_matrix[doc_id][ix]}')
-
 # Sample corpus
-documents = ['Machine learning is the study of computer algorithms that improve automatically through experience.\
-Machine learning algorithms build a mathematical model based on sample data, known as training data.\
-The discipline of machine learning employs various approaches to teach computers to accomplish tasks \
-where no fully satisfactory algorithm is available.',
-'Machine learning is closely related to computational statistics, which focuses on making predictions using computers.\
-The study of mathematical optimization delivers methods, theory and application domains to the field of machine learning.',
-'Machine learning involves computers discovering how they can perform tasks without being explicitly programmed to do so. \
-It involves computers learning from data provided so that they carry out certain tasks.',
-'Machine learning approaches are traditionally divided into three broad categories, depending on the nature of the "signal"\
-or "feedback" available to the learning system: Supervised, Unsupervised and Reinforcement',
-'Software engineering is the systematic application of engineering approaches to the development of software.\
-Software engineering is a computing discipline.',
-'A software engineer creates programs based on logic for the computer to execute. A software engineer has to be more concerned\
-about the correctness of the program in all the cases. Meanwhile, a data scientist is comfortable with uncertainty and variability.\
-Developing a machine learning application is more iterative and explorative process than software engineering.'
+'''
+documents = ['Deprecation error with php\
+mod_fcgid: stderr: PHP Fatal error:  Unparenthesized `a ? b : c ? d : e` is not supported. Use either `(a ? b : c) ? d : e` or `a ? b : (c ? d : e)` in public_html/user/plugins/aboutme/aboutme.php on line 71',
+'PHP 7.4 Deprecations/Changes. This issue is meant to track all the deprecation warnings in SuiteCRM when running on PHP 7.4.\
+Notable deprecations:\
+implode() now emits a deprecation warning when using it with the arguments in reverse order. use implode($glue, $parts) instead of implode($parts, $glue).',
+'Deprecation alert from jsm/serializer while using php 7.4.\
+When using 2.4.4 (latest 2.x) version of this bundle on php 7.4 environment, you will get this message:\
+PHP Deprecated:  Unparenthesized `a ? b : c ? d : e` is deprecated. Use either `(a ? b : c) ? d : e` or `a ? b : (c ? d : e)` in /app/vendor/jms/serializer/src/JMS/Serializer/SerializationContext.php on line 123',
+'PHP Unit test show "Unsilenced deprecation notices"\
+PHP Unit test:\
+1x: Unparenthesized a ? b : c ? d : e is deprecated. Use either (a ? b : c) ? d : e or a ? b : (c ? d : e)'
 ]
-
-urls = ['a', 'b', 'c', 'd', 'e', 'f']
+urls = ['a', 'b', 'c', 'd']
+'''
 
 pd.set_option('display.max_colwidth', 0)
 pd.set_option('display.max_columns', 0)
@@ -58,6 +38,14 @@ def getSimilarBert(urls, documents):
     document_embeddings = sbert_model.encode(documents_df['documents_cleaned'])
 
     documents_df['sim_score'] = cosine_similarity(document_embeddings)[0]
-    print(documents_df.sort_values(by='sim_score', ascending = False))
+    df = documents_df.sort_values(by='sim_score', ascending = False)
+    ans = []
+    for ind in df.index:
+        d = {
+            'url': df['urls'][ind],
+            'score': df['sim_score'][ind]
+        }
+        ans.append(d)
+    return ans
 
-getSimilarBert(urls, documents)
+# getSimilarBert(urls, documents)
