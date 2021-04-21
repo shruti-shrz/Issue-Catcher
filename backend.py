@@ -47,8 +47,9 @@ def bootstrap():
 				i = {}
 				i['url'] = k
 				i['ans'] = ans
-				#i['timestamp'] = date.today()
-				collection.insert_one(i)
+				i['timestamp'] = datetime.today()
+				if len(ans) > 0:
+					collection.insert_one(i)
 			else:
 				print("Picked from db!")
 				ans = myissue['ans']
@@ -85,28 +86,27 @@ def bootstrap():
 	return jsonify({'url' : ans})
 
 
-@app.route('/admin', methods=['GET'])
+@app.route('/admin', methods=['GET', 'POST'])
 def admin():
-	today = date.today()
+	today = datetime.today()
 	i = 0
 	limit = 20
 	flag = 0
 	c = 0
 	while flag == 0:
-		issues = collection.find({}, {'timestamp': {'$lt': today - timedelta(days = 30)}}).skip(i*limit).limit(limit)
-		if issues == None:
-			flag = 1
-			break
+		#  {'timestamp': {'$lte': ['$timestamp', today - timedelta(days = 0)]}}
+		issues = collection.find({}, {'timestamp': {'$lte': ['$timestamp', today - timedelta(days = 15)]}, 'url': 1}).skip(i*limit).limit(limit)
+		c = 0
 		for issue in issues:
+			print(issue)
 			if issue != None:
-				new_res = {'$set': {'ans': get_ans(issue['url'])}}
+				new_res = {'$set': {'ans': get_ans(issue['url']), 'timestamp': today}}
 				collection.update_one({'url': issue['url']}, new_res)
 				c += 1
-			else:
-				flag = 1
-				break
+		if c < limit:
+			break
 		i += 1
-	return jsonify({'res': str(c) + " issues updated"})				
+	return jsonify({'res': str(i* limit + c) + " issues updated"})				
 
 
 if __name__ == "__main__":
