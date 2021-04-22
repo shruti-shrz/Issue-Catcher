@@ -1,7 +1,7 @@
 import gensim
 from gensim.utils import simple_preprocess
 from gensim.parsing.preprocessing import STOPWORDS
-from nltk.stem import WordNetLemmatizer as wn, SnowballStemmer
+from nltk.stem import WordNetLemmatizer, SnowballStemmer
 #from sklearn.feature_extraction.text import CountVectorize
 from nltk.stem.porter import *
 import numpy as np
@@ -11,7 +11,7 @@ import nltk
 
 import pandas as pd
 stemmer = SnowballStemmer("english")
-nltk.download('wordnet')
+#nltk.download('wordnet')
 # nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
 import nltk.tokenize as nt
