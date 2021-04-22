@@ -3,6 +3,7 @@ import json
 from bs4 import BeautifulSoup
 from key_extract import *
 from similarBert import *
+from code_preprocessor import *
 import threading
 
 issues_1000 = []
@@ -114,8 +115,8 @@ def search_code_issues(**kwargs):
 	global code_ans
 	print('HI IN THREAD')
 	issue = kwargs.get('issue', {})
-	code_words = preprocess(issue['code'])
-	keys = '+'.join(code_words[0: min(len(code_words, 4))])
+	code_words = code_preprocess(issue['code'])
+	keys = '+'.join(code_words[0: min(len(code_words), 4)])
 	url = 'https://github.com/search?q=' + keys + '&type=issues'
 	get_issues(url, issue['url'], False)
 	text_list = []
