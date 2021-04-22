@@ -11,7 +11,7 @@ import nltk
 
 import pandas as pd
 stemmer = SnowballStemmer("english")
-# nltk.download('wordnet')
+nltk.download('wordnet')
 # nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
 import nltk.tokenize as nt
