@@ -77,8 +77,8 @@ def bootstrap():
 						collection.insert_one(j)
 					else:
 						print("issue already there!!")
-			# thread = threading.Thread(target=fill_other_issues, kwargs={'post_data': k})
-			# thread.start()
+			thread = threading.Thread(target=fill_other_issues, kwargs={'post_data': k})
+			thread.start()
 			if len(ans) > 0:
 			 	return jsonify({'url' : ans})
 			else:
