@@ -1,7 +1,7 @@
 import gensim
 from gensim.utils import simple_preprocess
 from gensim.parsing.preprocessing import STOPWORDS
-from nltk.stem import WordNetLemmatizer, SnowballStemmer
+from nltk.stem import WordNetLemmatizer as wn, SnowballStemmer
 #from sklearn.feature_extraction.text import CountVectorize
 from nltk.stem.porter import *
 import numpy as np
@@ -25,8 +25,8 @@ def preprocess(text):
     	token = lemmatizer(token)
     	if token not in gensim.parsing.preprocessing.STOPWORDS and token not in custom_stopwords:
     		result.append(token)
-            
     return result
+
 new_sample = "Mask RCNN tflite detection speed on android too slow. System information Mobile device (e.g. iPhone 8, Pixel 2, Samsung Galaxy) if the issue happens on mobile device: Android mobile TensorFlow installed from (source or binary): Binary TensorFlow version (use command below): 2.4.0 Python version: 3.7 Describe the current behavior We have converted Mask RCNN to TFLite using this link: https://wathek.medium.com/convert-mask-r-cnn-model-to-tflite-with-tensorflow-2-3-57160d3be18d and Tensorflow-2.4.0 We have used byte buffers for the input and output tensors and have the GPU delegate, multithreading enabled. However it is taking around 35 seconds for detection, which is really not feasible in terms of latency. Describe the expected behavior We expected the inference time to be around 3-5 seconds. How can we reduce the time taken for detection? Are there any changes we can make to the model other than those done in the link above? Any help would be appreciated, thank you."
 new_sample = re.sub('[^a-zA-Z0-9]', ' ', new_sample)
 #new_sample = re.sub('\s+',' ',new_sample)

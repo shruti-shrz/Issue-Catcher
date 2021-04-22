@@ -3,12 +3,15 @@ import json
 from bs4 import BeautifulSoup
 from key_extract import *
 from similarBert import *
+import threading
 
 issues_1000 = []
+issues_1001 = []
 issue = {}
 issue_score = []
 nex_count = 1
 other_issues = []
+code_ans = []
 
 def get_other_issues(repo_url):
 	global nex_count
@@ -37,9 +40,11 @@ def get_other_issues(repo_url):
 
 def get_ans(input_issue):
 	global issue
+	global code_ans
 	url = input_issue
 	ans = []
 	plain_html_text = requests.get(url)
+	issue['url'] = url
 	soup = BeautifulSoup(plain_html_text.text, "html.parser")
 	title = soup.find('span', {'class':'js-issue-title markdown-title'})
 	issue['title'] = title.text.strip()
@@ -51,6 +56,13 @@ def get_ans(input_issue):
 	labels = soup.findAll('a', {'class': 'IssueLabel'})
 	for label in labels:
 		issue['labels'].append(label.text.strip())
+	
+	code = body.find('code')
+	if code != None:
+		issue['code'] = code.text
+	else:
+		issue['code'] = ''
+
 	repo_url_end = url.find('/issues') 
 	repo_url = url[0:repo_url_end]
 	repo_html_text = requests.get(repo_url)
@@ -60,6 +72,12 @@ def get_ans(input_issue):
 		l = lang.text.strip()
 		issue['lang'].append(l)
 	print(issue)
+
+	# thread starts
+	thread = {}
+	if issue['code'] != '':
+		thread = threading.Thread(target=search_code_issues, kwargs={'issue': issue})
+		thread.start()
 	input_key = nlp_LDA(issue['title'])
 	if len(input_key) >= 4:
 		get_1000_issues(issue['lang'][0], input_key[0:4], url)
@@ -79,7 +97,38 @@ def get_ans(input_issue):
 	print(ans, end = '\n=============\n')
 	for i in range(1, min(6, len(ans))):
 		ans[i]['score'] = int(ans[i]['score']*100)
-	return ans[1:6]
+	# wait for thread to finish
+	if issue['code'] != '':
+		thread.join()
+		new_ans = ans[1:6] + code_ans[1:6]
+		new_ans = sorted(new_ans, key = lambda i: i['score'],reverse=True)
+		print('newans:')
+		print(new_ans[0:5])
+		return new_ans[0:5]
+	else:
+		print('ans:')
+		print(ans[1:6])
+		return ans[1:6]
+
+def search_code_issues(**kwargs):
+	global code_ans
+	print('HI IN THREAD')
+	issue = kwargs.get('issue', {})
+	code_words = preprocess(issue['code'])
+	keys = '+'.join(code_words[0: min(len(code_words, 4))])
+	url = 'https://github.com/search?q=' + keys + '&type=issues'
+	get_issues(url, issue['url'], False)
+	text_list = []
+	url_list = []
+	text_list.append(issue['title'] + issue['body'])
+	url_list.append(issue['url'])	
+	for i in issues_1001:
+		text_list.append(i['title'] + i['body'])
+		url_list.append(i['url'])
+	code_ans = getSimilarBert(url_list, text_list)
+	for i in range(1, min(6, len(code_ans))):
+		code_ans[i]['score'] = int(code_ans[i]['score']*100)
+	print('HI THREAD DONE')
 
 def get_1000_issues(language, keywords, inp_url):
 	keys = '+'.join(keywords)
@@ -87,7 +136,7 @@ def get_1000_issues(language, keywords, inp_url):
 	get_issues(url, inp_url)
 
 count = 0
-def get_issues(url, inp_url):
+def get_issues(url, inp_url, flag = True):
 	global count
 	count += 1
 	plain_html_text = requests.get(url)
@@ -98,17 +147,17 @@ def get_issues(url, inp_url):
 		if 'issues' in sel['href']:
 			sel_issue_url = "https://github.com" + sel['href']
 			if sel_issue_url != inp_url:
-				issue_parser(sel_issue_url)
+				issue_parser(sel_issue_url, flag)
 		elif 'pull' in sel['href']:
 			sel_pull_url = "https://github.com" + sel['href']
-			pull_req_parser(sel_pull_url)
+			pull_req_parser(sel_pull_url, flag)
 	next_page = soup.find('a',{'class':'next_page'})
 	if next_page == None or count == 2:
 		return
 	url_next = "https://github.com" + str(next_page['href'])
-	get_issues(url_next, inp_url)
+	get_issues(url_next, inp_url, flag)
 
-def issue_parser(url):
+def issue_parser(url, flag = True):
 	issue = {}
 	print(url)
 	plain_html_text = requests.get(url)
@@ -125,9 +174,12 @@ def issue_parser(url):
 	for label in labels:
 		issue['labels'].append(label.text.strip())
 	issue['url'] = url
-	issues_1000.append(issue)
+	if flag == True:
+		issues_1000.append(issue)
+	else:
+		issues_1001.append(issue)
 
-def pull_req_parser(url):
+def pull_req_parser(url, flag = True):
 	issue = {}
 	plain_html_text = requests.get(url)
 	soup = BeautifulSoup(plain_html_text.text, "html.parser")
@@ -138,7 +190,10 @@ def pull_req_parser(url):
 	for b in body.findAll('td', {'class':'comment-body'}):
 		issue['body'] += b.text.replace('\n',' ').strip()
 	issue['url'] = url
-	issues_1000.append(issue)
+	if flag:
+		issues_1000.append(issue)
+	else:
+		issues_1001.append(issue)
 
 def repo_parser(url_repo):
 	url = url_repo
