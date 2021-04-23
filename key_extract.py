@@ -11,7 +11,7 @@ import nltk
 
 import pandas as pd
 stemmer = SnowballStemmer("english")
-#nltk.download('wordnet')
+nltk.download('stopwords')
 # nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
 import nltk.tokenize as nt
@@ -34,7 +34,7 @@ def entity_extractor(text):
 	ss=nt.sent_tokenize(text)
 	tokenized_sent=[nt.word_tokenize(sent) for sent in ss]
 	pos_sentences = [nltk.pos_tag(sent) for sent in tokenized_sent]
-	print(pos_sentences)
+	#print(pos_sentences)
 def file_content(word):
 	with open("technical_keyword.txt","r") as read_obj:
 		for line in read_obj:

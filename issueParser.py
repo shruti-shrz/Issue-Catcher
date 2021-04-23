@@ -94,8 +94,8 @@ def get_ans(input_issue):
 		text_list.append(i['title'] + i['body'])
 		url_list.append(i['url'])
 	ans = getSimilarBert(url_list, text_list)
-	print('===========')
-	print(ans, end = '\n=============\n')
+	#print('===========')
+	#print(ans, end = '\n=============\n')
 	for i in range(1, min(6, len(ans))):
 		ans[i]['score'] = int(ans[i]['score']*100)
 	# wait for thread to finish
@@ -160,11 +160,11 @@ def get_issues(url, inp_url, flag = True):
 
 def issue_parser(url, flag = True):
 	issue = {}
-	print(url)
+	#print(url)
 	plain_html_text = requests.get(url)
 	soup = BeautifulSoup(plain_html_text.text, "html.parser")
 	title = soup.find('span', {'class':'js-issue-title markdown-title'})
-	print(title)
+	#print(title)
 	issue['title'] = title.text.strip()
 	issue['body'] = ''
 	body = soup.find('div', {'class':'edit-comment-hide'})
@@ -247,7 +247,7 @@ def repo_parser(url_repo):
 			if var[1]=="Closed":
 				repo_details['close_issue'] = f
 		
-	print(repo_details)
+	#print(repo_details)
 	return repo_details
 
 	# for sol in soup.findAll('div',{'class':'flex-auto'}):
