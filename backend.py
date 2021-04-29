@@ -69,7 +69,7 @@ def bootstrap():
 						collection.insert_one(j)
 					else:
 						print("issue already there!!")
-
+			
 			# THE FOLLOWING 2 LINES TO UNCOMMENT TO ENABLE THE ABOVE FEATURE OF BACKGROUND COMPUTATION OF OTHER ISSUES
 			# thread = threading.Thread(target=fill_other_issues, kwargs={'post_data': k})
 			# thread.start()
@@ -77,7 +77,7 @@ def bootstrap():
 			if len(ans) > 0:
 			 	return jsonify({'url' : ans})   # returning similar issues
 			else:
-			 	return jsonify({'error':'Similar Issues Not Found'})    # no similar issues found
+			 	return jsonify({'message':'Similar Issues Not Found. Sorry!!'})
 	return jsonify({'url' : ans})
 
 # admin route , to update DB if entries are more than 15 days old
