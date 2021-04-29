@@ -14,6 +14,7 @@ nex_count = 1
 other_issues = []
 code_ans = []
 
+# function to scrape other issues in current repo, to aid the commented code background processing
 def get_other_issues(repo_url):
 	global nex_count
 	global other_issues
@@ -38,7 +39,7 @@ def get_other_issues(repo_url):
 	url_next = 'https://github.com' + res2['href']
 	get_other_issues(url_next)
 
-
+# function which gives the top 5 similar issues and their URLs and scores
 def get_ans(input_issue):
 	global issue
 	global code_ans
@@ -46,6 +47,8 @@ def get_ans(input_issue):
 	ans = []
 	plain_html_text = requests.get(url)
 	issue['url'] = url
+	
+	# scraping necessary details of the input issue
 	soup = BeautifulSoup(plain_html_text.text, "html.parser")
 	title = soup.find('span', {'class':'js-issue-title markdown-title'})
 	issue['title'] = title.text.strip()
@@ -75,18 +78,20 @@ def get_ans(input_issue):
 	print("INPUT ISSUE:")
 	print(issue)
 
-	# thread starts
+	# thread to get issues based on code in input issue starts here
 	thread = {}
 	if issue['code'] != '':
 		thread = threading.Thread(target=search_code_issues, kwargs={'issue': issue})
 		thread.start()
-	input_key = nlp_LDA(issue['title'])
+	input_key = nlp_LDA(issue['title'])   # getting keywords from title of input issue
+	# getting scraped issues that we get from query
 	if len(input_key) >= 4:
-		get_1000_issues(issue['lang'][0], input_key[0:4], url)
+		get_1000_issues(issue['lang'][0], input_key[0:4], url)  
 	else:
 		get_1000_issues(issue['lang'][0], input_key[0:len(input_key)], url)
 
-	input_issue_key = nlp_LDA(issue['title']+issue['body'])
+	input_issue_key = nlp_LDA(issue['title']+issue['body']) # getting key words
+	# preparing document list for BERT similarity model
 	text_list = []
 	url_list = []
 	text_list.append(issue['title'] + issue['body'])
@@ -94,9 +99,10 @@ def get_ans(input_issue):
 	for i in issues_1000:
 		text_list.append(i['title'] + i['body'])
 		url_list.append(i['url'])
-	ans = getSimilarBert(url_list, text_list)
+	ans = getSimilarBert(url_list, text_list)  # getting similarity scores for input documents
 	for i in range(1, min(6, len(ans))):
 		ans[i]['score'] = int(ans[i]['score']*100)
+
 	# wait for thread to finish
 	if issue['code'] != '':
 		thread.join()
@@ -105,15 +111,18 @@ def get_ans(input_issue):
 		print('NEWANS:')
 		print(new_ans)
 		return new_ans
-	else:
+	else:   # in case of no code in input issue
 		print('ANS:')
 		print(ans[1:6])
 		return ans[1:6]
 
+# function that runs on the thread created for code related search
 def search_code_issues(**kwargs):
 	global code_ans
 	print('HI IN THREAD')
 	issue = kwargs.get('issue', {})
+
+	# preprocessing of code to get relevant words 
 	code_words = code_preprocess(issue['code'])
 	keys = '+'.join(code_words[0: min(len(code_words), 4)])
 	url = 'https://github.com/search?q=' + keys + '&type=issues'
@@ -125,17 +134,19 @@ def search_code_issues(**kwargs):
 	for i in issues_1001:
 		text_list.append(i['title'] + i['body'])
 		url_list.append(i['url'])
-	code_ans = getSimilarBert(url_list, text_list)
+	code_ans = getSimilarBert(url_list, text_list)   # getting similarity scores
 	for i in range(1, min(6, len(code_ans))):
 		code_ans[i]['score'] = int(code_ans[i]['score']*100)
 	print('HI THREAD DONE')
 
+# querying for issues using keywords extracted
 def get_1000_issues(language, keywords, inp_url):
 	keys = '+'.join(keywords)
 	url = 'https://github.com/search?q=' + keys + '+in%3Atitle&type=issues'
 	get_issues(url, inp_url)
 
 count = 0
+# getting info for each issue from the pages obtained after querying
 def get_issues(url, inp_url, flag = True):
 	global count
 	count += 1
@@ -157,6 +168,7 @@ def get_issues(url, inp_url, flag = True):
 	url_next = "https://github.com" + str(next_page['href'])
 	get_issues(url_next, inp_url, flag)
 
+# scraping info for each issue
 def issue_parser(url, flag = True):
 	if url == None:
 		return
@@ -183,6 +195,7 @@ def issue_parser(url, flag = True):
 	else:
 		issues_1001.append(issue)
 
+# scraping info for each pull request
 def pull_req_parser(url, flag = True):
 	if url == None:
 		return
@@ -204,6 +217,7 @@ def pull_req_parser(url, flag = True):
 	else:
 		issues_1001.append(issue)
 
+# scraping details of repo : NOT USING ANYMORE
 def repo_parser(url_repo):
 	url = url_repo
 	plain_html_text = requests.get(url)
@@ -258,71 +272,4 @@ def repo_parser(url_repo):
 	#print(repo_details)
 	return repo_details
 
-	# for sol in soup.findAll('div',{'class':'flex-auto'}):
-	# 	k = sol.find('a')
-	# 	if k != None:
-	# 		n = k['href']
-	# 		var = n.split('/')
-	# 		if var[-1].isdigit():
-	# 			print("Issue:  "+k.text)
-	# 			print(n)
-	# 			i = i+1
-	# 			url2 = url_repo + '/' +var[-1]
-	# 			plain_html_text2 = requests.get(url2)
-	# 			soup2 = BeautifulSoup(plain_html_text2.text, "html.parser")
-	# 			m = soup2.find('td')
-				
-	# 			if m != None:
-	# 				q = m.find('p')
-	# 				if q != None:
-	# 					r = q.text
-	# 					print("Issue Description:  "+r)
-						
-
-	 	# url2 = "https://www.codechef.com" + l
-	 	# plain_html_text2 = requests.get(url2)
-	 	# soup2 = BeautifulSoup(plain_html_text2.text, "html.parser")
-	 	# m = soup2.find('div',{'class':'ace_content'})
-	 	# print(m)i=i+1
-	 	# if i==20:
-	 	# 	break
-	# url = "https://www.codechef.com/viewsolution/34866751"
-	# plain_html_text = requests.get(url)
-	# soup = BeautifulSoup(plain_html_text.text, "html.parser")
-	# for j in soup.findAll('div',{'class':'para-div'}):
-	#  	k = j.find('p')
-	#  	print(j)
-	#  	print(k)
-# count = 0
-# def getrepos(url):
-# 	global count
-# 	count += 1
-# 	plain_html_text = requests.get(url)
-# 	soup = BeautifulSoup(plain_html_text.text, "html.parser")
-# 	tag = soup.findAll('li',{'class':'repo-list-item'})
-# 	for sel in tag:
-# 		sel = sel.find('a')
-# 		print(sel['href'])
-# 		repo_url = "https://github.com" + sel['href']
-# 		repo_parser(repo_url)
-# 	next_page = soup.findAll('a',{'class':'next_page'})
-# 	if next_page == None or count == 2:
-# 		return
-# 	url_next = "https://github.com" + str(next_page[0]['href'])
-# 	getrepos(url_next)
-
-
-#repo_parser('https://github.com/tensorflow/tensorflow')
-#getrepos('https://github.com/search?p=1&q=is%3Apublic&type=Repositories')
-
-#get_ans('https://github.com/tensorflow/tensorflow/issues/47973')
-# if __name__ == '__main__':
-# 	get_1000_issues('Javascript', ['change','color','toast'])
-# 	input_issue_key = nlp_LDA(new_sample)
-# 	for i in ip.issues_1000:
-
-# print(len(issues_1000))
-# if __name__ == "__main__":
-#     print(get_ans("https://github.com/ionic-team/ionic-v3/issues/767"))
-#get_other_issues('https://github.com/facebook/react/issues')
-#print(other_issues)
+	

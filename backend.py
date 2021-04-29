@@ -8,21 +8,24 @@ from settings import MONGOPASS
 import threading
 from datetime import *
 
+# getting db collection to query on and insert to
 cluster =  MongoClient('mongodb+srv://pinky:'+MONGOPASS+'@cluster0.hfcw3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
 db = cluster['IssueDB']
 collection = db['issues']
-k = "hello"
+
+k = ""
 ans = []
 app = Flask(__name__)
 CORS(app)
+
+# main route
 @app.route('/', methods=['POST', 'GET'])
 def bootstrap():
 	global ans
 	global k
-	#print("Heyyy ",other_issues)
 	if request.method == 'POST':
 		if not request.form:
-			print("nothing!!!")
+			print("nothing!!!")  # empty request: error
 			return jsonify({'error' : 'Empty request'})
 		else:
 			var = request.form
@@ -30,31 +33,20 @@ def bootstrap():
 			print(k,type(k))
 			myquery = {"url":k}
 			myissue = None
-			myissue = collection.find_one(myquery)
-			#print(ans)
-			# if myissue == None:
-			#ans = get_ans(k)
-			# 	i = {'url' : k, 'ans': ans}
-			# 	collection.insert_one(i)
-			# else:
-			# 	ans = myissue['ans']
-			# if len(ans) > 0:
-			# 	return jsonify(ans)
-			# else:
-			# 	return jsonify({'error':'Similar Issues Not Found'})
-			if myissue == None:
-				ans = get_ans(k)
+			myissue = collection.find_one(myquery)  # seeing if input issue already exists in DB
+			if myissue == None:    # not found in DB
+				ans = get_ans(k)    # THE function which gives similar issues 
 				i = {}
 				i['url'] = k
 				i['ans'] = ans
 				i['timestamp'] = datetime.today()
 				if len(ans) > 0:
-					collection.insert_one(i)
+					collection.insert_one(i)   # inserting into DB
 			else:
-				print("Picked from db!")
+				print("Picked from db!")    # found in DB
 				ans = myissue['ans']
 				#print(ans)
-			def fill_other_issues(**kwargs):
+			def fill_other_issues(**kwargs):    # function to do the entire process for other issues in the backgorund
 				#global other_issues
 				url_rep = kwargs.get('post_data', {})
 				other_issues.clear()
@@ -77,15 +69,18 @@ def bootstrap():
 						collection.insert_one(j)
 					else:
 						print("issue already there!!")
+
+			# THE FOLLOWING 2 LINES TO UNCOMMENT TO ENABLE THE ABOVE FEATURE OF BACKGROUND COMPUTATION OF OTHER ISSUES
 			# thread = threading.Thread(target=fill_other_issues, kwargs={'post_data': k})
 			# thread.start()
+
 			if len(ans) > 0:
-			 	return jsonify({'url' : ans})
+			 	return jsonify({'url' : ans})   # returning similar issues
 			else:
-			 	return jsonify({'error':'Similar Issues Not Found'})
+			 	return jsonify({'error':'Similar Issues Not Found'})    # no similar issues found
 	return jsonify({'url' : ans})
 
-
+# admin route , to update DB if entries are more than 15 days old
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
 	today = datetime.today()
@@ -94,7 +89,6 @@ def admin():
 	flag = 0
 	c = 0
 	while flag == 0:
-		#  {'timestamp': {'$lte': ['$timestamp', today - timedelta(days = 0)]}}
 		issues = collection.find({}, {'timestamp': {'$lte': ['$timestamp', today - timedelta(days = 15)]}, 'url': 1}).skip(i*limit).limit(limit)
 		c = 0
 		for issue in issues:
