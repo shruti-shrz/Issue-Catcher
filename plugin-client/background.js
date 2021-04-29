@@ -17,7 +17,7 @@
 //   return response.json(); // parses JSON response into native JavaScript objects
 // }
 
-function createPopup(data){
+function createPopup(data, flag){
     
 var r = window.confirm("Do you want to see Similar Issues?");
 if(r == true)
@@ -26,16 +26,25 @@ var popup = window.open("",'_blank',"toolbar=yes,scrollbars=yes,resizable=yes,to
 //popup.onload = function() { this.document.title = "your new title"; }
 
 var t_txt = popup.document.createElement("div");
-var ul_list = popup.document.createElement("UL");
-ul_list.setAttribute("id", "ullist");
 popup.document.body.style =  "background: #ff9999;" ;
-t_txt.innerHTML = "<strong><h2>Similar Issues</h2></strong>";
-popup.document.body.appendChild(t_txt);
-ul_list.style = "background: #ffe5e5; padding: 20px;"
-ul_list.innerHTML = data;
-popup.document.body.appendChild(ul_list);
-let menu = popup.document.getElementById('ullist');
-menu.removeChild(menu.lastElementChild);
+
+if(flag)
+{
+    t_txt.innerHTML = "<strong><h2>Similar Issues</h2></strong>";
+    popup.document.body.appendChild(t_txt);
+    var ul_list = popup.document.createElement("UL");
+    ul_list.setAttribute("id", "ullist");
+    ul_list.style = "background: #ffe5e5;"
+    ul_list.innerHTML = data;
+    popup.document.body.appendChild(ul_list);
+    //let menu = popup.document.getElementById('ullist');
+    //menu.removeChild(menu.lastElementChild);
+}else{
+    var no_issue = popup.document.createElement("div2");
+    no_issue.innerHTML = "<strong><center><h2 style = \" font-size:20px;background: #ffe5e5; margin-top: 25px;\">"+data+"</h2></center></strong>";
+    popup.document.body.appendChild(no_issue);
+}
+
 popup.document.title = "Similar Issues";
 }
 
@@ -57,18 +66,26 @@ $.ajax({
         var d = JSON.parse(JSON.stringify(data))
         //alert(d);
         //alert(d.url)
-        for(var i = 0; i < d.url.length; i++)
+        if(d.message)
         {
+            s = d.message;
+            //alert(s);
+            createPopup(s, false);
+        }else
+            {for(var i = 0; i < d.url.length; i++)
+            {
 
-            var h = d.url[i].url
-            var l = "<li style = \"margin-left: 20px;font-size:15px;\"><a href =\""+h+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+h+"</a><li>"
-            s += l
+                var h = d.url[i].url
+                var l = "<li style = \"margin-left: 20px;font-size:15px;\"><a href =\""+h+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+h+"</a><li>"
+                s += l
+            }
+        createPopup(s, true);
         }
         //s+="<ol>"
        // alert(s)
        //  h = data["url"][0]["url"]
        // var s = ["<a href="+h+">"+h+"</a>","<a href=www.google.com>www.google.com</a>"]
-       createPopup(s);
+       
        //alert("heyy")
 
     },

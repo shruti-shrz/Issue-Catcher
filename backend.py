@@ -82,7 +82,7 @@ def bootstrap():
 			if len(ans) > 0:
 			 	return jsonify({'url' : ans})
 			else:
-			 	return jsonify({'error':'Similar Issues Not Found'})
+			 	return jsonify({'message':'Similar Issues Not Found'})
 	return jsonify({'url' : ans})
 
 
