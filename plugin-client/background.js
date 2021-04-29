@@ -1,45 +1,24 @@
-// Example POST method implementation:
-// async function postData(url = '', data = {}) {
-//   // Default options are marked with *
-//   const response = await fetch(url, {
-//     method: 'POST', // *GET, POST, PUT, DELETE, etc.
-//     mode: 'cors', // no-cors, *cors, same-origin
-//     cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-//     credentials: 'same-origin', // include, *same-origin, omit
-//     headers: {
-//       'Content-Type': 'application/json'
-//       // 'Content-Type': 'application/x-www-form-urlencoded',
-//     },
-//     redirect: 'follow', // manual, *follow, error
-//     referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-//     body: JSON.stringify(data) // body data type must match "Content-Type" header
-//   });
-//   return response.json(); // parses JSON response into native JavaScript objects
-// }
-
-function createPopup(data, flag){
-    
-var r = window.confirm("Do you want to see Similar Issues?");
-if(r == true)
+// crate popup to display the response from the backend.py
+function createPopup(data, flag){  
+var r = window.confirm("Do you want to see Similar Issues?"); // ask user whether he/she wants to see the similar issues or not
+if(r == true) 
 {
 var popup = window.open("",'_blank',"toolbar=yes,scrollbars=yes,resizable=yes,top=100,left=500,width=500,height=300");
-//popup.onload = function() { this.document.title = "your new title"; }
-
 var t_txt = popup.document.createElement("div");
 popup.document.body.style =  "background: #ff9999;" ;
 
-if(flag)
+if(flag) // Similar Issues found
 {
     t_txt.innerHTML = "<strong><h2>Similar Issues</h2></strong>";
     popup.document.body.appendChild(t_txt);
     var ul_list = popup.document.createElement("UL");
     ul_list.setAttribute("id", "ullist");
-    ul_list.style = "background: #ffe5e5;"
+    ul_list.style = "background: #ffe5e5;font-size:0px;"
     ul_list.innerHTML = data;
     popup.document.body.appendChild(ul_list);
-    //let menu = popup.document.getElementById('ullist');
-    //menu.removeChild(menu.lastElementChild);
-}else{
+    let menu = popup.document.getElementById('ullist');
+    menu.removeChild(menu.lastElementChild);
+}else{ // similar issues not found
     var no_issue = popup.document.createElement("div2");
     no_issue.innerHTML = "<strong><center><h2 style = \" font-size:20px;background: #ffe5e5; margin-top: 25px;\">"+data+"</h2></center></strong>";
     popup.document.body.appendChild(no_issue);
@@ -50,44 +29,31 @@ popup.document.title = "Similar Issues";
 
 }
 
-
+// take issue number from the content.js and sent to backend.py by making POST request
 chrome.runtime.onMessage.addListener(function(response, sender, sendResponse){
 console.log(response)
-// postData('http://127.0.0.1:5000/',response).then(data => {
-//     console.log(data); // JSON data parsed by `data.json()` call
-//   });
 $.ajax({
     type: 'POST',
     url: 'http://127.0.0.1:5000/',
     dataType : 'json',
     data : response,
-    success : function(data){
+    success : function(data){ // on success get response from the backend
         var s = '';
         var d = JSON.parse(JSON.stringify(data))
-        //alert(d);
-        //alert(d.url)
-        if(d.message)
+        if(d.message) // No issue found
         {
             s = d.message;
-            //alert(s);
             createPopup(s, false);
-        }else
+        }else // Similar Issue found
             {for(var i = 0; i < d.url.length; i++)
             {
 
                 var h = d.url[i].url
-                var l = "<li style = \"margin-left: 20px;font-size:15px;\"><a href =\""+h+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+h+"</a><li>"
+                var l = "<li style = \"margin: 10px;font-size:15px;\"><a href =\""+h+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+h+"</a><li>"
                 s += l
             }
         createPopup(s, true);
         }
-        //s+="<ol>"
-       // alert(s)
-       //  h = data["url"][0]["url"]
-       // var s = ["<a href="+h+">"+h+"</a>","<a href=www.google.com>www.google.com</a>"]
-       
-       //alert("heyy")
-
     },
     error: function (xhr, ajaxOptions, thrownError) { //Add these parameters to display the required response
         alert(xhr.status);
@@ -95,15 +61,5 @@ $.ajax({
        
     },
     });
-	// alert(response)
- //    sendResponse({ message: "Background has received that message" });
- // .done(function (data){
- //        console.log(`background's response: ${data.response}`);
- //       #sendResponse({message:data.response})
- //    }).fail(function (error){
- //        console.log(`error: ${error}`);
- //        #sendResponse({"error":error})
- //    })
-
 })
 

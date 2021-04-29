@@ -77,7 +77,7 @@ def bootstrap():
 			if len(ans) > 0:
 			 	return jsonify({'url' : ans})   # returning similar issues
 			else:
-			 	return jsonify({'message':'Similar Issues Not Found'})
+			 	return jsonify({'message':'Similar Issues Not Found. Sorry!!'})
 	return jsonify({'url' : ans})
 
 # admin route , to update DB if entries are more than 15 days old

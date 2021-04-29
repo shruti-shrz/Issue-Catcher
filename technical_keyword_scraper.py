@@ -1,3 +1,4 @@
+#Extract technical keywords by scraping the tags from stack overflow and storing in a file technical_keywords.txt
 import requests
 import json
 from bs4 import BeautifulSoup
@@ -5,18 +6,6 @@ count = 975
 s_c=0
 list_words = set()
 f=open('technical_keyword.txt','a')
-# lines_seen = set()  # holds lines already seen
-# outfile = open('tech.txt', "w")
-# infile = open('technical_keyword.txt', "r")
-# print("The file bar.txt is as follows")
-# for line in infile:
-#     #print line
-#     if line not in lines_seen:  # not a duplicate
-#         outfile.write(line)
-#         lines_seen.add(line)
-# outfile.close()
-# print("end")
-
 
 def getwords(url):
 	global count
@@ -57,10 +46,6 @@ def getwords(url):
 	url_next = "https://stackoverflow.com/tags?page="+str(count)+"&tab=popular"
 	getwords(url_next)
 getwords('https://stackoverflow.com/tags?page=975&tab=popular')
-#l1 = list(list_words)
-
-# for ele in l1:
-#     f.write(ele+'\n')
 
 f.close()
 print(s_c)
