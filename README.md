@@ -28,7 +28,7 @@ pip3 install sentence_transformers
 import nltk
 nltk.download('stopwords')
 ```
-* After this, create an account in MongoDB and paste the genarted key in **backend.py** inside MongoClient. 
+* After this, create an account in MongoDB (Atlas) and paste the generated key in **backend.py** inside MongoClient. 
 * Rename the file **settings_template.py** as **settings.py** and copy-paste your MongoDB password as mantioned below:
 ```
 MONGOPASS = "password"
