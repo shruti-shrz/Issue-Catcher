@@ -29,6 +29,8 @@ pd.set_option('display.max_colwidth', 0)
 pd.set_option('display.max_columns', 0)
 sbert_model = SentenceTransformer('bert-base-nli-mean-tokens')
 
+
+# returns dictionary of similar issues, containing url and score
 def getSimilarBert(urls, documents):
     documents_df=pd.DataFrame(list(zip(urls, documents)), columns=['urls','documents'])
 
@@ -37,8 +39,8 @@ def getSimilarBert(urls, documents):
     documents_df['documents_cleaned']=documents_df.documents.apply(lambda x: " ".join(re.sub(r'[^a-zA-Z]',' ',w).lower() for w in x.split() if re.sub(r'[^a-zA-Z]',' ',w).lower() not in stop_words_l) )
     document_embeddings = sbert_model.encode(documents_df['documents_cleaned'])
 
-    documents_df['sim_score'] = cosine_similarity(document_embeddings)[0]
-    df = documents_df.sort_values(by='sim_score', ascending = False)
+    documents_df['sim_score'] = cosine_similarity(document_embeddings)[0]  # cosine similarity w.r.t input issue
+    df = documents_df.sort_values(by='sim_score', ascending = False)  # sorting according to similarity score
     ans = []
     for ind in df.index:
         d = {

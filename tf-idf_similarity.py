@@ -1,13 +1,13 @@
+# THIS CODE NOT USED ANYMORE, EXPERIMENTED TO SEE IF BETTER RESULTS ARE OBTAINED WITH THIS MODEL
+# BERT CHOSEN OVER TF-IDF EVENTUALLY 
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 base_document = "Deprecation error with php mod_fcgid: stderr: PHP Fatal error:  Unparenthesized a ? b : c ? d : e is not supported. Use either `(a ? b : c) ? d : e` or `a ? b : (c ? d : e)` in public_html/user/plugins/aboutme/aboutme.php on line 71"
-# documents = [
-# 'API documentation',
-# 'API Documentation Incorrect. Describe the bug https://github.com/stashapp/stash/wiki/API\
-# Can scan for new files with cookies per the doc, but generate content with a cookie.txt file fails and says Graphql\
-# Validation Failed To Reproduce curl --verbose --cookie-jar cookie.txt  --data username=USER&password=PASS localhost:9998/login\
-# curl']
+
+
+# sample corpus
 documents = ['Deprecation error with php\
 mod_fcgid: stderr: PHP Fatal error:  Unparenthesized `a ? b : c ? d : e` is not supported. Use either `(a ? b : c) ? d : e` or `a ? b : (c ? d : e)` in public_html/user/plugins/aboutme/aboutme.php on line 71',
 'PHP 7.4 Deprecations/Changes. This issue is meant to track all the deprecation warnings in SuiteCRM when running on PHP 7.4.\
@@ -19,9 +19,7 @@ PHP Deprecated:  Unparenthesized `a ? b : c ? d : e` is deprecated. Use either `
 'PHP Unit test show "Unsilenced deprecation notices"\
 PHP Unit test:\
 1x: Unparenthesized a ? b : c ? d : e is deprecated. Use either (a ? b : c) ? d : e or a ? b : (c ? d : e)']
-#base_document = "This is an example sentence for the document to be compared"
-#documents = ["Toast notification - can we simplify toast messages?Long toast messages on a phone give users additional mental effort to read it - I recommend simplifying the message like : Uploaded! Closed! Reopened! This will balance out the busy feeling coming from the item screen. This is more of a taste, so please make a team consensus."]
-#documents = ["This is documents to be compared against the document"]
+
 def process_tfidf_similarity():
     vectorizer = TfidfVectorizer()
 
