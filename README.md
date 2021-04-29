@@ -33,23 +33,23 @@ nltk.download('stopwords')
 MONGOPASS = 'pinky'
 ```
 ### The Run
-* To get the backend running, you have to navigate to the **Issue-Catcher** directory and run the following in the terminal:
+* To get the backend running, you have to navigate to the ```Issue-Catcher``` directory and run the following in the terminal:
 ```
 python3 backend.py
 ```
-* To get the extension, go to **Google Chrome** and navigate to the **chrome://extensions** page and switch ON Developer Mode. Click on the button **Load unpacked** and select the ```Issue-Catcher/plugin-client``` folder. You will see **Github_plugin** under the list of extensions and you can switch that ON now.
+* To get the extension, go to **Google Chrome** and navigate to the ```chrome://extensions``` page and switch ON Developer Mode. Click on the button ```Load unpacked``` and select the ```Issue-Catcher/plugin-client``` folder. You will see **Github_plugin** under the list of extensions and you can switch that ON now.
 * Now, to see the tool in action! navigate to any issue from any repository, ensure backend is running and extension is ON, reload the issue if there's no change in the terminal running backend.
 * You will get a pop-up asking if you want to see similar issues. Press OK and this will give you a Chrome window displaying links to the similar issues found. If not, you will get a pop-up notifying that no similar issues were found, sorry!
 
 ## About the tool
 * The extension, when switched ON, gets the URL the user is currently browsing, and if it is a Github Issue URL, it is passed on to the backend through a POST request asking for similar issues.
-* In the backend, the title, body, labels and other useful details of the input issue are scraped with the help of BeautifulSoup. 
-* The LDA model is used to extract keywords from the title of the input issue, and these are used to query for Github issues.
-* The top 20 issues are scraped, their details are obtained, and a similarity score is got w.r.t. the input issue for each of these 20 (or less) issues using a BERT similarity model.
+* In the backend, the title, body, labels and other useful details of the input issue are scraped with the help of **BeautifulSoup**. 
+* The **LDA** model is used to extract keywords from the title of the input issue, and these are used to query for Github issues.
+* The top 20 issues are scraped, their details are obtained, and a similarity score is got w.r.t. the input issue for each of these 20 (or less) issues using a **BERT** similarity model.
 * Another thread in the backend simultaneously runs a search for issues having some of the same code the input issue has, and these are also given a similairty score.
 * Finally top 5 issues' URLs are returned and displayed for user. 
-* These issues and their similar issues are stored in a MongoDB Atlas database, so if some input issue is already there in the DB, the links are directly returned from DB.
-* There is a feature, which scraps other issues in the current repository user is in, in the background and fills up the DB with issues and their similar ones, so as to speed up response next time. To see how this works, kindly uncomment the appropriate code in backend.py
+* These issues and their similar issues are stored in a **MongoDB** Atlas database, so if some input issue is already there in the DB, the links are directly returned from DB.
+* There is a feature, which scraps other issues in the current repository user is in, in the background and fills up the DB with issues and their similar ones, so as to speed up response next time. To see how this works, kindly uncomment the appropriate code in ```backend.py```
 * There is also an /admin route which takes GET requests and updates the issues in DB if the last update has been more than 15 days back.
 
 
