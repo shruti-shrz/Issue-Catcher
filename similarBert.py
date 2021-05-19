@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-# import nltk
-# nltk.download('stopwords')
+#import nltk
+#nltk.download('stopwords')
 from nltk.corpus import stopwords
 import nltk
 import re
