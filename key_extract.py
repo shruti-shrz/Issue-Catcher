@@ -11,7 +11,7 @@ import nltk
 
 import pandas as pd
 stemmer = SnowballStemmer("english")
-nltk.download('stopwords')
+# nltk.download('stopwords')
 # nltk.download('averaged_perceptron_tagger')
 import nltk.tokenize as nt
 custom_stopwords = ['up','inside',"warn","use","ve","error","true","false",'issue','begin','read','named','open','lines','non','approach','conventional','statement','sample']
