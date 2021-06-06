@@ -5,7 +5,6 @@ from flask import request, jsonify
 from issueParser import *
 from flask_cors import CORS
 from settings import MONGOPASS
-import threading
 from datetime import *
 
 # getting db collection to query on and insert to
@@ -70,7 +69,7 @@ def bootstrap():
 					else:
 						print("issue already there!!")
 			
-			# THE FOLLOWING 2 LINES TO UNCOMMENT TO ENABLE THE ABOVE FEATURE OF BACKGROUND COMPUTATION OF OTHER ISSUES
+			# # THE FOLLOWING 2 LINES TO UNCOMMENT TO ENABLE THE ABOVE FEATURE OF BACKGROUND COMPUTATION OF OTHER ISSUES
 			# thread = threading.Thread(target=fill_other_issues, kwargs={'post_data': k})
 			# thread.start()
 
