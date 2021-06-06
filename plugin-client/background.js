@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse){
 console.log(response)
 $.ajax({
     type: 'POST',
-    url: 'http://127.0.0.1:5000/',
+    url: 'http://0.0.0.0:4567/',
     dataType : 'json',
     data : response,
     success : function(data){ // on success get response from the backend

@@ -4,10 +4,12 @@ from flask import Flask
 from flask import request, jsonify
 from issueParser import *
 from flask_cors import CORS
+from dotenv import load_dotenv
 import os
 import threading
 from datetime import *
 
+load_dotenv()
 MONGOUSER = str(os.environ.get('MONGOUSER'))
 MONGOPASS = str(os.environ.get('MONGOPASS'))
 print(MONGOPASS)
