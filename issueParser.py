@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from key_extract import *
 from similarBert import *
 from code_preprocessor import *
-import threading
+import re
 
 issues_1000 = []
 issues_1001 = []
@@ -51,15 +51,16 @@ def get_ans(input_issue):
 	# scraping necessary details of the input issue
 	soup = BeautifulSoup(plain_html_text.text, "html.parser")
 	title = soup.find('span', {'class':'js-issue-title markdown-title'})
-	issue['title'] = title.text.strip()
+	title = title.text.strip()
+	issue['title'] = re.sub(r'\[.+\]','',title)
 	issue['body'] = ''
 	body = soup.find('div', {'class':'edit-comment-hide'})
 	for b in body.findAll('td', {'class':'comment-body'}):
 		issue['body'] += b.text.replace('\n',' ').strip()
-	issue['labels'] = []
-	labels = soup.findAll('a', {'class': 'IssueLabel'})
-	for label in labels:
-		issue['labels'].append(label.text.strip())
+	# issue['labels'] = []
+	# labels = soup.findAll('a', {'class': 'IssueLabel'})
+	# for label in labels:
+	# 	issue['labels'].append(label.text.strip())
 	
 	code = body.find('code')
 	if code != None:
@@ -71,26 +72,23 @@ def get_ans(input_issue):
 	repo_url = url[0:repo_url_end]
 	repo_html_text = requests.get(repo_url)
 	soup = BeautifulSoup(repo_html_text.text, "html.parser")
-	issue['lang'] = []
-	for lang in soup.findAll('span',{'class':'color-text-primary text-bold mr-1'}):
-		l = lang.text.strip()
-		issue['lang'].append(l)
+	# issue['lang'] = []
+	# for lang in soup.findAll('span',{'class':'color-text-primary text-bold mr-1'}):
+	# 	l = lang.text.strip()
+	# 	issue['lang'].append(l)
 	print("INPUT ISSUE:")
 	print(issue)
 
 	# thread to get issues based on code in input issue starts here
-	thread = {}
-	if issue['code'] != '':
-		thread = threading.Thread(target=search_code_issues, kwargs={'issue': issue})
-		thread.start()
+	
 	input_key = nlp_LDA(issue['title'])   # getting keywords from title of input issue
 	# getting scraped issues that we get from query
 	if len(input_key) >= 4:
-		get_1000_issues(issue['lang'][0], input_key[0:4], url)  
+		get_1000_issues(input_key[0:4], url)  
 	else:
-		get_1000_issues(issue['lang'][0], input_key[0:len(input_key)], url)
+		get_1000_issues(input_key[0:len(input_key)], url)
 
-	input_issue_key = nlp_LDA(issue['title']+issue['body']) # getting key words
+	#input_issue_key = nlp_LDA(issue['title']+issue['body']) # getting key words
 	# preparing document list for BERT similarity model
 	text_list = []
 	url_list = []
@@ -104,8 +102,9 @@ def get_ans(input_issue):
 		ans[i]['score'] = int(ans[i]['score']*100)
 
 	# wait for thread to finish
+		
 	if issue['code'] != '':
-		thread.join()
+		search_code_issues(issue)
 		new_ans = ans[1:4] + code_ans[1:3]
 		#new_ans = sorted(new_ans, key = lambda i: i['score'],reverse=True)
 		print('NEWANS:')
@@ -117,11 +116,10 @@ def get_ans(input_issue):
 		return ans[1:6]
 
 # function that runs on the thread created for code related search
-def search_code_issues(**kwargs):
+def search_code_issues(issue):
 	global code_ans
-	print('HI IN THREAD')
-	issue = kwargs.get('issue', {})
-
+	print('HI IN CODE')
+	
 	# preprocessing of code to get relevant words 
 	code_words = code_preprocess(issue['code'])
 	keys = '+'.join(code_words[0: min(len(code_words), 4)])
@@ -137,10 +135,10 @@ def search_code_issues(**kwargs):
 	code_ans = getSimilarBert(url_list, text_list)   # getting similarity scores
 	for i in range(1, min(6, len(code_ans))):
 		code_ans[i]['score'] = int(code_ans[i]['score']*100)
-	print('HI THREAD DONE')
+	print('HI CODE DONE')
 
 # querying for issues using keywords extracted
-def get_1000_issues(language, keywords, inp_url):
+def get_1000_issues(keywords, inp_url):
 	keys = '+'.join(keywords)
 	url = 'https://github.com/search?q=' + keys + '+in%3Atitle&type=issues'
 	get_issues(url, inp_url)
@@ -184,11 +182,11 @@ def issue_parser(url, flag = True):
 	if body != None:
 		for b in body.findAll('td', {'class':'comment-body'}):
 			issue['body'] += b.text.replace('\n',' ').strip()
-	issue['labels'] = []
-	labels = soup.findAll('a', {'class': 'IssueLabel'})
-	if labels != None:
-		for label in labels:
-			issue['labels'].append(label.text.strip())
+	# issue['labels'] = []
+	# labels = soup.findAll('a', {'class': 'IssueLabel'})
+	# if labels != None:
+	# 	for label in labels:
+	# 		issue['labels'].append(label.text.strip())
 	issue['url'] = url
 	if flag == True:
 		issues_1000.append(issue)

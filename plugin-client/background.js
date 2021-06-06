@@ -5,7 +5,7 @@ if(r == true)
 {
 var popup = window.open("",'_blank',"toolbar=yes,scrollbars=yes,resizable=yes,top=100,left=500,width=500,height=300");
 var t_txt = popup.document.createElement("div");
-popup.document.body.style =  "background: #ff9999;" ;
+popup.document.body.style =  "background: #ADD8E6;" ;
 
 if(flag) // Similar Issues found
 {
@@ -13,14 +13,14 @@ if(flag) // Similar Issues found
     popup.document.body.appendChild(t_txt);
     var ul_list = popup.document.createElement("UL");
     ul_list.setAttribute("id", "ullist");
-    ul_list.style = "background: #ffe5e5;font-size:0px;"
+    ul_list.style = "background: #FFFFFF;font-size:0px;"
     ul_list.innerHTML = data;
     popup.document.body.appendChild(ul_list);
     let menu = popup.document.getElementById('ullist');
     menu.removeChild(menu.lastElementChild);
 }else{ // similar issues not found
     var no_issue = popup.document.createElement("div2");
-    no_issue.innerHTML = "<strong><center><h2 style = \" font-size:20px;background: #ffe5e5; margin-top: 25px;\">"+data+"</h2></center></strong>";
+    no_issue.innerHTML = "<strong><center><h2 style = \" font-size:20px;background: #FFFFFF; margin-top: 25px;\">"+data+"</h2></center></strong>";
     popup.document.body.appendChild(no_issue);
 }
 
@@ -56,8 +56,8 @@ $.ajax({
         }
     },
     error: function (xhr, ajaxOptions, thrownError) { //Add these parameters to display the required response
-        alert(xhr.status);
-        alert(xhr.responseText);
+        //alert(xhr.status);
+        //alert(xhr.responseText);
        
     },
     });

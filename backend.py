@@ -10,6 +10,7 @@ from datetime import *
 
 MONGOUSER = str(os.environ.get('MONGOUSER'))
 MONGOPASS = str(os.environ.get('MONGOPASS'))
+# print(MONGOPASS)
 # getting db collection to query on and insert to
 cluster =  MongoClient('mongodb+srv://'+MONGOUSER+':'+MONGOPASS+'@cluster0.hfcw3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
 db = cluster['IssueDB']
@@ -72,7 +73,7 @@ def bootstrap():
 					else:
 						print("issue already there!!")
 			
-			# THE FOLLOWING 2 LINES TO UNCOMMENT TO ENABLE THE ABOVE FEATURE OF BACKGROUND COMPUTATION OF OTHER ISSUES
+			# # THE FOLLOWING 2 LINES TO UNCOMMENT TO ENABLE THE ABOVE FEATURE OF BACKGROUND COMPUTATION OF OTHER ISSUES
 			# thread = threading.Thread(target=fill_other_issues, kwargs={'post_data': k})
 			# thread.start()
 
