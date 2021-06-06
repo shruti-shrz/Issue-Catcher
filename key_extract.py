@@ -57,7 +57,7 @@ def nlp_LDA(sample): # Extract releveant keywords after preprocessing the sample
 	check_set =set()
 	for idx, topic in lda_model.show_topics(-1,10):
 		var = topic.split("+")
-		# print("Topic: {} \nWords: {}".format(idx, topic))
+		print("Topic: {} \nWords: {}".format(idx, topic))
 		for word in var:
 			word = word.split("*")[1].strip()[1:-1]
 			if word not in check_set:
@@ -67,7 +67,7 @@ def nlp_LDA(sample): # Extract releveant keywords after preprocessing the sample
 		res = file_content(word)
 		if res == True:
 			final_keys.append(word)
-			# print("IN  -> ",word)
+			print("IN  -> ",word)
 	return final_keys
 
 def similar_issues_score(input_issue_keywords, issue_keywords): # giving score to the issue based on the common keywords

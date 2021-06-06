@@ -10,7 +10,7 @@ from datetime import *
 
 MONGOUSER = str(os.environ.get('MONGOUSER'))
 MONGOPASS = str(os.environ.get('MONGOPASS'))
-# print(MONGOPASS)
+print(MONGOPASS)
 # getting db collection to query on and insert to
 cluster =  MongoClient('mongodb+srv://'+MONGOUSER+':'+MONGOPASS+'@cluster0.hfcw3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
 db = cluster['IssueDB']
@@ -28,7 +28,7 @@ def bootstrap():
 	global k
 	if request.method == 'POST':
 		if not request.form:
-			# print("nothing!!!")  # empty request: error
+			print("nothing!!!")  # empty request: error
 			return jsonify({'error' : 'Empty request'})
 		else:
 			var = request.form
@@ -48,7 +48,7 @@ def bootstrap():
 			else:
 				print("Picked from db!")    # found in DB
 				ans = myissue['ans']
-				#print(ans)
+				print(ans)
 			def fill_other_issues(**kwargs):    # function to do the entire process for other issues in the backgorund
 				#global other_issues
 				url_rep = kwargs.get('post_data', {})
