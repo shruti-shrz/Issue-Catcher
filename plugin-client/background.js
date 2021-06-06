@@ -49,7 +49,8 @@ $.ajax({
             {
 
                 var h = d.url[i].url
-                var l = "<li style = \"margin: 10px;font-size:15px;\"><a href =\""+h+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+h+"</a><li>"
+                var k = d.url[i].score
+                var l = "<li style = \"margin: 10px;font-size:15px;\"><a href =\""+h+"\" target=\"_blank\" rel=\"noopener noreferrer\">"+h+"</a><br><i> Similarity Score: "+k+"</i></br><li>"
                 s += l
             }
         createPopup(s, true);
