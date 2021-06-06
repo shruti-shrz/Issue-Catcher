@@ -74,8 +74,8 @@ def bootstrap():
 						print("issue already there!!")
 			
 			# # THE FOLLOWING 2 LINES TO UNCOMMENT TO ENABLE THE ABOVE FEATURE OF BACKGROUND COMPUTATION OF OTHER ISSUES
-			# thread = threading.Thread(target=fill_other_issues, kwargs={'post_data': k})
-			# thread.start()
+			thread = threading.Thread(target=fill_other_issues, kwargs={'post_data': k})
+			thread.start()
 
 			if len(ans) > 0:
 			 	return jsonify({'url' : ans})   # returning similar issues
