@@ -28,12 +28,12 @@ def bootstrap():
 	global k
 	if request.method == 'POST':
 		if not request.form:
-			print("nothing!!!")  # empty request: error
+			# print("nothing!!!")  # empty request: error
 			return jsonify({'error' : 'Empty request'})
 		else:
 			var = request.form
 			k = var['issue']
-			print(k,type(k))
+			print(k)
 			myquery = {"url":k}
 			myissue = None
 			myissue = collection.find_one(myquery)  # seeing if input issue already exists in DB
