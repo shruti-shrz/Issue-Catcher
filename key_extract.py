@@ -9,7 +9,7 @@ import re
 np.random.seed(400)
 import nltk
 
-import pandas as pd
+#import pandas as pd
 stemmer = SnowballStemmer("english")
 # nltk.download('stopwords')
 # nltk.download('averaged_perceptron_tagger')

@@ -4,12 +4,14 @@ from flask import Flask
 from flask import request, jsonify
 from issueParser import *
 from flask_cors import CORS
-from settings import MONGOPASS
+import os
 import threading
 from datetime import *
 
+MONGOUSER = str(os.environ.get('MONGOUSER'))
+MONGOPASS = str(os.environ.get('MONGOPASS'))
 # getting db collection to query on and insert to
-cluster =  MongoClient('mongodb+srv://pinky:'+MONGOPASS+'@cluster0.hfcw3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
+cluster =  MongoClient('mongodb+srv://'+MONGOUSER+':'+MONGOPASS+'@cluster0.hfcw3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
 db = cluster['IssueDB']
 collection = db['issues']
 
