@@ -76,8 +76,8 @@ def get_ans(input_issue):
 	# for lang in soup.findAll('span',{'class':'color-text-primary text-bold mr-1'}):
 	# 	l = lang.text.strip()
 	# 	issue['lang'].append(l)
-	print("INPUT ISSUE:")
-	print(issue)
+	# print("INPUT ISSUE:")
+	# print(issue)
 
 	# thread to get issues based on code in input issue starts here
 	
@@ -107,18 +107,18 @@ def get_ans(input_issue):
 		search_code_issues(issue)
 		new_ans = ans[1:4] + code_ans[1:3]
 		#new_ans = sorted(new_ans, key = lambda i: i['score'],reverse=True)
-		print('NEWANS:')
-		print(new_ans)
+		# print('NEWANS:')
+		# print(new_ans)
 		return new_ans
 	else:   # in case of no code in input issue
-		print('ANS:')
-		print(ans[1:6])
+		# print('ANS:')
+		# print(ans[1:6])
 		return ans[1:6]
 
 # function that runs on the thread created for code related search
 def search_code_issues(issue):
 	global code_ans
-	print('HI IN CODE')
+	# print('HI IN CODE')
 	
 	# preprocessing of code to get relevant words 
 	code_words = code_preprocess(issue['code'])
@@ -135,7 +135,7 @@ def search_code_issues(issue):
 	code_ans = getSimilarBert(url_list, text_list)   # getting similarity scores
 	for i in range(1, min(6, len(code_ans))):
 		code_ans[i]['score'] = int(code_ans[i]['score']*100)
-	print('HI CODE DONE')
+	# print('HI CODE DONE')
 
 # querying for issues using keywords extracted
 def get_1000_issues(keywords, inp_url):
@@ -188,8 +188,8 @@ def issue_parser(url, flag = True):
 	# 	for label in labels:
 	# 		issue['labels'].append(label.text.strip())
 	issue['url'] = url
-	print("ISSUE PARSER")
-	print(issue)
+	# print("ISSUE PARSER")
+	# print(issue)
 	if flag == True:
 		issues_1000.append(issue)
 	else:
@@ -212,8 +212,8 @@ def pull_req_parser(url, flag = True):
 		for b in body.findAll('td', {'class':'comment-body'}):
 			issue['body'] += b.text.replace('\n',' ').strip()
 	issue['url'] = url
-	print("\nPULL REQUEST PARSER")
-	print(issue)
+	# print("\nPULL REQUEST PARSER")
+	# print(issue)
 	if flag:
 		issues_1000.append(issue)
 	else:
