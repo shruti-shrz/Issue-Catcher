@@ -2,7 +2,7 @@ import numpy
 from sentence_transformers import SentenceTransformer, util
 
 model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
-
+model.max_seq_length = 512
 
 # returns dictionary of similar issues, containing url and score
 def getSimilarBert(urls, documents):
