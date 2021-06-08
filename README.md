@@ -1,5 +1,5 @@
 # IssueCatcher
-![](images/rishalogo.png)  |  ![](images/iittplogo.png)
+![](images/rishalogo.png)   ![](images/iittplogo.png)
 
 ## What is IssueCatcher
 IssueCatcher is a chrome extension to help github users find similar issues and pull requests to the issue they want to solve/explore. There are millions of issues out there on Github, and it is most likely for one to encounter an issue that has already been reported and discussed in some other repository and hence can get solutions from these discussions that have happened under such similar issues. IssueCatcher provides list of top five similar issues and pull requests across the github to the input issue and fasten the development process.
@@ -34,11 +34,11 @@ Snapshot of the UI of IssueCatcher. As soon as user clicks on an issue, the conf
 git clone https://github.com/shruti-shrz/Issue-Catcher.git
 ```
 Or directly download this repository in your local system.
-- Go to chrome://extensions/ in the chrome browser(you have now taken to the chrome extension page).
+- Type **chrome://extensions/** in the chrome browser (you are now taken to the chrome extension page).
 - Switch on the **Developer Mode**, by clicking on the button in the top right corner.
-- Click on **Load unpacked**, now go to the *IssueCater* folder.
-- Select the folder **plugin-client** inside the *IssueCater* folder and click open.
-- Now, IssueCatcher plugin is installed and visible in the chrome extension page so switch ON the plugin incase its not by clicking on the button in the bottom right corner.
+- Click on **Load unpacked**, now go to the *IssueCatcher* folder.
+- Select the folder **plugin-client** inside the *IssueCatcher* folder and click open.
+- Now, IssueCatcher plugin is installed and visible in the chrome extension page, so switch ON the plugin incase its not by clicking on the button in the bottom right corner.
 
 ## How to Use IssueCatcher
 - Navigate to the Github Issue page.
