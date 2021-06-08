@@ -2,11 +2,12 @@
 ![](images/rishalogo.png)  |  ![](images/iittplogo.png)
 
 ## What is IssueCatcher
-IssueCatcher is a chrome extension to help github users find similar issues and pull requests to the issue they want to solve/explore. There are millions of issues out there, and it is most likely for one to find an issue that has already been reported and discussed in some other repository and hence can get solutions from these discussions that have happened under such similar issues. IssueCatcher provides list of top five similar issues and pull requests across the github to the input issue and fasten the development process.
+IssueCatcher is a chrome extension to help github users find similar issues and pull requests to the issue they want to solve/explore. There are millions of issues out there on Github, and it is most likely for one to encounter an issue that has already been reported and discussed in some other repository and hence can get solutions from these discussions that have happened under such similar issues. IssueCatcher provides list of top five similar issues and pull requests across the github to the input issue and fasten the development process.
 
 ## Features of IssueCatcher
 - Identify the similar issues and pull requests across the github.
 - After user clicks on an issue, confirmation pages comes that whether user wants to see similar issues or not and based on user input it followed by the pop-up displaying list of five most similar issues and pull requests.
+- The issue's result which is already present in the database, gets updated by admin after every 15 days so that user gets an updated result.
 
 ## Working of IssueCatcher
 The approach followed by IssueCatcher to detect similar issues and pull requests is summarised below.
@@ -21,6 +22,9 @@ The approach followed by IssueCatcher to detect similar issues and pull requests
 - Now, pretrained Sentence BERT model takes input issue details and details of each of the issues we got from the previous step as input and generate similarity score.
 - Based on similarity score, top five issues are send to the client-side as well as stored in the database.
 
+## Snapshot of the UI
+![](images/snapshotui.png)
+Snapshot of the UI of IssueCatcher. As soon as user clicks on an issue, the confirm message appears as shown by [A]. If user clicks on **OK**, pop-up appears as shown by [B], displaying the top five similar issues along with the Similarity Score.
 
 ## How to install IssueCatcher
 - Clone this repository by typing following command in the Terminal
@@ -28,7 +32,7 @@ The approach followed by IssueCatcher to detect similar issues and pull requests
 git clone https://github.com/shruti-shrz/Issue-Catcher.git
 ```
 Or directly download this repository in your local system.
-- Click here [chrome://extensions/][PlDb], now you have taken to the chrome extension page.
+- Go to chrome://extensions/ in the chrome browser(you have now taken to the chrome extension page).
 - Switch on the **Developer Mode**, by clicking on the button in the top right corner.
 - Click on **Load unpacked**, now go to the *IssueCater* folder.
 - Select the folder **plugin-client** inside the *IssueCater* folder and click open.
@@ -44,10 +48,12 @@ Or directly download this repository in your local system.
 * The extension, when switched ON, gets the URL the user is currently browsing, and if it is a Github Issue URL, it is passed on to the backend through a POST request asking for similar issues.
 * In the backend, the title, body, labels and other useful details of the input issue are scraped with the help of **BeautifulSoup**. 
 * The **LDA** model is used to extract keywords from the title of the input issue, and these are used to query for Github issues.
-* The top 20 issues are scraped, their details are obtained, and a similarity score is got w.r.t. the input issue for each of these 20 (or less) issues using a **BERT** similarity model.
+* The top 2 pages of issues are scraped, their details are obtained, and a similarity score is got w.r.t. the input issue for each of these top 2 pages issues using a **Sentence BERT** similarity model.
 * Another thread in the backend simultaneously runs a search for issues having some of the same code the input issue has, and these are also given a similairty score.
 * Finally top 5 issues' URLs are returned and displayed for user. 
 * These issues and their similar issues are stored in a **MongoDB** Atlas database, so if some input issue is already there in the DB, the links are directly returned from DB.
 * There is also an /admin route which takes GET requests and updates the issues in DB if the last update has been more than 15 days back.
 
+## How to contribute to IssueCatcher
+In case of any bug, feature improvisation or enhancement of the tool, please make a pull request or open an issue to discuss what you would like to change. In case of any query or suggestions please feel free to contact Shruti Priya (cs18b043@iitp.ac.in) or W Pranathi (cs18b045@iitp.ac.in) or Venigalla Akhila Sri Manasa (cs18m017@iitp.ac.in) or Sridhar Chimalakonda (ch@iittp.ac.in) of RISHA Lab, IIT Tirupati, India.
 
