@@ -1,47 +1,44 @@
-# Issue-Catcher
+# IssueCatcher
+![](images/rishalogo.png)  |  ![](images/iittplogo.png)
 
-This is a tool to help github users find issues and pull requests similar to the issue they want to solve/explore. There are millions of issues out there, and it is most likely for one to find an issue that has already been pointed out and discussed about in some repository, that is very similar or possibly the same issue that you are facing, and hence can get solutions from these discussions that have happened under such similar issues. Hence, we hope this tool will be widely used by fellow developers and evolves greatly through contributions.
+## What is IssueCatcher
+IssueCatcher is a chrome extension to help github users find similar issues and pull requests to the issue they want to solve/explore. There are millions of issues out there, and it is most likely for one to find an issue that has already been reported and discussed in some other repository and hence can get solutions from these discussions that have happened under such similar issues. IssueCatcher provides list of top five similar issues and pull requests across the github to the input issue and fasten the development process.
 
-## How to run/use this tool
-### Installations
-* Ensure you have Python 3.7 installed in your computer.
-* Clone this repository and run the following in the terminal if you don't already have these libraries installed:
+## Features of IssueCatcher
+- Identify the similar issues and pull requests across the github.
+- After user clicks on an issue, confirmation pages comes that whether user wants to see similar issues or not and based on user input it followed by the pop-up displaying list of five most similar issues and pull requests.
+
+## Working of IssueCatcher
+The approach followed by IssueCatcher to detect similar issues and pull requests is summarised below.
+![](images/issue.jpg)
+
+- In current version, we have chrome extension as the client-side and server running at the backend.
+- As soon as user clicks on an issue, issue url is sent to the backend as an input.
+- Then, we see if input issue is available in the database or not, if issue is available in the database we directly fetch the result from the database and send to client-side to display.
+- If issue is not available in the database, then we scrape input issue title and body and then using LDA model generates the important keywords from the title of the input issue.
+- The top four generated important keyowrds from the previous step is used to make query to the github serach engine in order to get initial set of relevant issues.
+- Then, we scrape list of issues along with the details (issue url, issue title, issue body) present in the first two pages of the result from the previous step.
+- Now, pretrained Sentence BERT model takes input issue details and details of each of the issues we got from the previous step as input and generate similarity score.
+- Based on similarity score, top five issues are send to the client-side as well as stored in the database.
+
+
+## How to install IssueCatcher
+- Clone this repository by typing following command in the Terminal
 ```
-pip3 install pymongo
-pip3 install flask
-pip3 install flask_cors
-pip3 install threading
-pip3 install datetime
-pip3 install gensim
-pip3 install nltk
-pip3 install numpy
-pip3 install re
-pip3 install pandas
-pip3 install requests
-pip3 install json
-pip3 install bs4
-pip3 install sklearn
-pip3 install sentence_transformers
+git clone https://github.com/shruti-shrz/Issue-Catcher.git
 ```
-* Run the following in python command line interface:
-```
-import nltk
-nltk.download('stopwords')
-nltk.download('wordnet')
-```
-* After this, create an account in MongoDB (Atlas) and paste the generated key in **backend.py** inside MongoClient. 
-* Rename the file **settings_template.py** as **settings.py** and copy-paste your MongoDB password as mantioned below:
-```
-MONGOPASS = "password"
-```
-### The Run
-* To get the backend running, you have to navigate to the ```Issue-Catcher``` directory and run the following in the terminal:
-```
-python3 backend.py
-```
-* To get the extension, go to **Google Chrome** and navigate to the ```chrome://extensions``` page and switch ON Developer Mode. Click on the button ```Load unpacked``` and select the ```Issue-Catcher/plugin-client``` folder. You will see **Github_plugin** under the list of extensions and you can switch that ON now.
-* Now, to see the tool in action! navigate to any issue from any repository, ensure backend is running and extension is ON, reload the issue if there's no change in the terminal running backend.
-* You will get a pop-up asking if you want to see similar issues. Press OK and this will give you a Chrome window displaying links to the similar issues found. If not, you will get a pop-up notifying that no similar issues were found, sorry!
+Or directly download this repository in your local system.
+- Click here [chrome://extensions/][PlDb], now you have taken to the chrome extension page.
+- Switch on the **Developer Mode**, by clicking on the button in the top right corner.
+- Click on **Load unpacked**, now go to the *IssueCater* folder.
+- Select the folder **plugin-client** inside the *IssueCater* folder and click open.
+- Now, IssueCatcher plugin is installed and visible in the chrome extension page so switch ON the plugin incase its not by clicking on the button in the bottom right corner.
+
+## How to Use IssueCatcher
+- Navigate to the Github Issue page.
+- Click on any issue (open or close) and wait for few seconds.
+- A confirm pop-up will appear asking *Do you want to see Similar Issues?*, Click on Yes (in case popup doesn't come in few seconds refresh the page and wait).
+- A prompt will come, displaying list of similar issues along with the similarity score.
 
 ## About the tool
 * The extension, when switched ON, gets the URL the user is currently browsing, and if it is a Github Issue URL, it is passed on to the backend through a POST request asking for similar issues.
@@ -51,7 +48,6 @@ python3 backend.py
 * Another thread in the backend simultaneously runs a search for issues having some of the same code the input issue has, and these are also given a similairty score.
 * Finally top 5 issues' URLs are returned and displayed for user. 
 * These issues and their similar issues are stored in a **MongoDB** Atlas database, so if some input issue is already there in the DB, the links are directly returned from DB.
-* There is a feature, which scraps other issues in the current repository user is in, in the background and fills up the DB with issues and their similar ones, so as to speed up response next time. To see how this works, kindly uncomment the appropriate code in ```backend.py```
 * There is also an /admin route which takes GET requests and updates the issues in DB if the last update has been more than 15 days back.
 
 
