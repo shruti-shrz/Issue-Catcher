@@ -11,6 +11,7 @@ IssueCatcher is a chrome extension to help github users find similar issues and 
 
 ## Working of IssueCatcher
 The approach followed by IssueCatcher to detect similar issues and pull requests is summarised below.
+
 ![](images/issue.jpg)
 
 - In current version, we have chrome extension as the client-side and server running at the backend.
@@ -24,6 +25,7 @@ The approach followed by IssueCatcher to detect similar issues and pull requests
 
 ## Snapshot of the UI
 ![](images/snapshotui.png)
+
 Snapshot of the UI of IssueCatcher. As soon as user clicks on an issue, the confirm message appears as shown by [A]. If user clicks on **OK**, pop-up appears as shown by [B], displaying the top five similar issues along with the Similarity Score.
 
 ## How to install IssueCatcher
