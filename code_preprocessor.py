@@ -12,6 +12,6 @@ def code_preprocess(text):
     pure_txt = pure_text.strip()
     #print(pure_txt)
     result = pure_txt.split(' ')
-    print('----------WORDS---------')
-    print(result)
+    # print('----------WORDS---------')
+    # print(result)
     return result

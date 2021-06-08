@@ -12,7 +12,7 @@ from datetime import *
 load_dotenv()
 MONGOUSER = str(os.environ.get('MONGOUSER'))
 MONGOPASS = str(os.environ.get('MONGOPASS'))
-print(MONGOPASS)
+# print(MONGOPASS)
 # getting db collection to query on and insert to
 cluster =  MongoClient('mongodb+srv://'+MONGOUSER+':'+MONGOPASS+'@cluster0.hfcw3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
 db = cluster['IssueDB']
@@ -38,19 +38,23 @@ def bootstrap():
 			print(k)
 			myquery = {"url":k}
 			myissue = None
-			myissue = collection.find_one(myquery)  # seeing if input issue already exists in DB
-			if myissue == None:    # not found in DB
-				ans = get_ans(k)    # THE function which gives similar issues 
-				i = {}
-				i['url'] = k
-				i['ans'] = ans
-				i['timestamp'] = datetime.today()
-				if len(ans) > 0:
-					collection.insert_one(i)   # inserting into DB
-			else:
-				print("Picked from db!")    # found in DB
-				ans = myissue['ans']
-			print(ans)
+			try:
+				myissue = collection.find_one(myquery)  # seeing if input issue already exists in DB
+				if myissue == None:    # not found in DB
+					ans = get_ans(k)    # THE function which gives similar issues 
+					i = {}
+					i['url'] = k
+					i['ans'] = ans
+					i['timestamp'] = datetime.today()
+					if len(ans) > 0:
+						collection.insert_one(i)   # inserting into DB
+				else:
+					print("Picked from db!")    # found in DB
+					ans = myissue['ans']
+				print(ans)
+			except:
+				ans = []
+			
 			def fill_other_issues(**kwargs):    # function to do the entire process for other issues in the backgorund
 				#global other_issues
 				url_rep = kwargs.get('post_data', {})

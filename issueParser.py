@@ -49,37 +49,28 @@ def get_ans(input_issue):
 	issue['url'] = url
 	
 	# scraping necessary details of the input issue
-	soup = BeautifulSoup(plain_html_text.text, "html.parser")
-	title = soup.find('span', {'class':'js-issue-title markdown-title'})
-	title = title.text.strip()
-	issue['title'] = re.sub(r'\[.+\]','',title)
-	issue['body'] = ''
-	body = soup.find('div', {'class':'edit-comment-hide'})
-	for b in body.findAll('td', {'class':'comment-body'}):
-		issue['body'] += b.text.replace('\n',' ').strip()
-	# issue['labels'] = []
-	# labels = soup.findAll('a', {'class': 'IssueLabel'})
-	# for label in labels:
-	# 	issue['labels'].append(label.text.strip())
-	
-	code = body.find('code')
-	if code != None:
-		issue['code'] = code.text
-	else:
-		issue['code'] = ''
-
-	repo_url_end = url.find('/issues') 
-	repo_url = url[0:repo_url_end]
-	repo_html_text = requests.get(repo_url)
-	soup = BeautifulSoup(repo_html_text.text, "html.parser")
-	# issue['lang'] = []
-	# for lang in soup.findAll('span',{'class':'color-text-primary text-bold mr-1'}):
-	# 	l = lang.text.strip()
-	# 	issue['lang'].append(l)
-	# print("INPUT ISSUE:")
-	# print(issue)
-
-	# thread to get issues based on code in input issue starts here
+	try:
+		soup = BeautifulSoup(plain_html_text.text, "html.parser")
+		title = soup.find('span', {'class':'js-issue-title markdown-title'})
+		title = title.text.strip()
+		issue['title'] = re.sub(r'\[.+\]','',title)
+		issue['body'] = ''
+		body = soup.find('div', {'class':'edit-comment-hide'})
+		for b in body.findAll('td', {'class':'comment-body'}):
+			issue['body'] += b.text.replace('\n',' ').strip()
+		# issue['labels'] = []
+		# labels = soup.findAll('a', {'class': 'IssueLabel'})
+		# for label in labels:
+		# 	issue['labels'].append(label.text.strip())
+		
+		code = body.find('code')
+		if code != None:
+			issue['code'] = code.text
+		else:
+			issue['code'] = ''
+	except:
+		print("Input issue scraping error")
+		return []
 	
 	input_key = nlp_LDA(issue['title'])   # getting keywords from title of input issue
 	# getting scraped issues that we get from query
@@ -148,6 +139,8 @@ count = 0
 def get_issues(url, inp_url, flag = True):
 	global count
 	count += 1
+	if count == 2:
+		return
 	plain_html_text = requests.get(url)
 	soup = BeautifulSoup(plain_html_text.text, "html.parser")
 	issues_10 = soup.findAll('div',{'class':'issue-list-item'})
@@ -161,7 +154,7 @@ def get_issues(url, inp_url, flag = True):
 			sel_pull_url = "https://github.com" + sel['href']
 			pull_req_parser(sel_pull_url, flag)
 	next_page = soup.find('a',{'class':'next_page'})
-	if next_page == None or count == 2:
+	if next_page == None:
 		return
 	url_next = "https://github.com" + str(next_page['href'])
 	get_issues(url_next, inp_url, flag)
@@ -171,53 +164,61 @@ def issue_parser(url, flag = True):
 	if url == None:
 		return
 	issue = {}
-	plain_html_text = requests.get(url)
-	soup = BeautifulSoup(plain_html_text.text, "html.parser")
-	title = soup.find('span', {'class':'js-issue-title markdown-title'})
-	issue['title'] = ''
-	if title != None:
-		issue['title'] = title.text.strip()
-	issue['body'] = ''
-	body = soup.find('div', {'class':'edit-comment-hide'})
-	if body != None:
-		for b in body.findAll('td', {'class':'comment-body'}):
-			issue['body'] += b.text.replace('\n',' ').strip()
-	# issue['labels'] = []
-	# labels = soup.findAll('a', {'class': 'IssueLabel'})
-	# if labels != None:
-	# 	for label in labels:
-	# 		issue['labels'].append(label.text.strip())
-	issue['url'] = url
-	# print("ISSUE PARSER")
-	# print(issue)
-	if flag == True:
-		issues_1000.append(issue)
-	else:
-		issues_1001.append(issue)
+	try:
+		plain_html_text = requests.get(url)
+		soup = BeautifulSoup(plain_html_text.text, "html.parser")
+		title = soup.find('span', {'class':'js-issue-title markdown-title'})
+		issue['title'] = ''
+		if title != None:
+			issue['title'] = title.text.strip()
+		issue['body'] = ''
+		body = soup.find('div', {'class':'edit-comment-hide'})
+		if body != None:
+			for b in body.findAll('td', {'class':'comment-body'}):
+				issue['body'] += b.text.replace('\n',' ').strip()
+		# issue['labels'] = []
+		# labels = soup.findAll('a', {'class': 'IssueLabel'})
+		# if labels != None:
+		# 	for label in labels:
+		# 		issue['labels'].append(label.text.strip())
+		issue['url'] = url
+		# print("ISSUE PARSER")
+		# print(issue)
+		if flag == True:
+			issues_1000.append(issue)
+		else:
+			issues_1001.append(issue)
+	except:
+		print("Issue parser error")
+		return
 
 # scraping info for each pull request
 def pull_req_parser(url, flag = True):
 	if url == None:
 		return
 	issue = {}
-	plain_html_text = requests.get(url)
-	soup = BeautifulSoup(plain_html_text.text, "html.parser")
-	title = soup.find('span', {'class':'js-issue-title markdown-title'})
-	issue['title'] = ''
-	if title != None:
-		issue['title'] = title.text.strip()
-	issue['body'] = ''
-	body = soup.find('div', {'class':'edit-comment-hide'})
-	if body != None:
-		for b in body.findAll('td', {'class':'comment-body'}):
-			issue['body'] += b.text.replace('\n',' ').strip()
-	issue['url'] = url
-	# print("\nPULL REQUEST PARSER")
-	# print(issue)
-	if flag:
-		issues_1000.append(issue)
-	else:
-		issues_1001.append(issue)
+	try:
+		plain_html_text = requests.get(url)
+		soup = BeautifulSoup(plain_html_text.text, "html.parser")
+		title = soup.find('span', {'class':'js-issue-title markdown-title'})
+		issue['title'] = ''
+		if title != None:
+			issue['title'] = title.text.strip()
+		issue['body'] = ''
+		body = soup.find('div', {'class':'edit-comment-hide'})
+		if body != None:
+			for b in body.findAll('td', {'class':'comment-body'}):
+				issue['body'] += b.text.replace('\n',' ').strip()
+		issue['url'] = url
+		# print("\nPULL REQUEST PARSER")
+		# print(issue)
+		if flag:
+			issues_1000.append(issue)
+		else:
+			issues_1001.append(issue)
+	except:
+		print("PR parser error")
+		return
 
 # scraping details of repo : NOT USING ANYMORE
 def repo_parser(url_repo):
